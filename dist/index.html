@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Arta-Desktop</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+
+	<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="app.js"></script>
+</head>
+<body ng-app="artaApp">
+	<header>
+	</header>	
+	<div class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				
+			</div>
+
+			<div class="navbar-brand">
+				Arta
+			</div>
+
+			<ul class="nav navbar-nav">
+				<li ui-sref-active="active">
+					<a href ui-sref="commodities">Commodities</a>
+				</li>
+				<li ui-sref-active="active">
+					<a href ui-sref="consumers">Consumers</a>
+				</li>
+				<li ui-sref-active="active">
+					<a href ui-sref="regions">Regions</a>
+				</li>
+				<li ui-sref-active="active">
+					<a href ui-sref="directories">Directories</a>
+				</li>
+				<li ui-sref-active="active">
+					<a href ui-sref="about">About</a>
+				</li>
+			</ul>
+
+		</div>
+	</div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div ui-view="content" class="col-md-12">
+				
+			</div>
+		</div>
+	</div>
+		
+</body>
+</html>
