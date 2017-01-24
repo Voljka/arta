@@ -25,8 +25,9 @@
 	$query .="'$mail',";
 	$query .="'$notes',";
 	$query .="$worker)";
+
+	echo $query;
 	
 	$result = mysql_query($query) or die(mysql_error());
 	
-	echo $query;
 ?>

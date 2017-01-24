@@ -3,6 +3,9 @@ require('angular-route');
 require('angular-ui-router');
 
 var commodityTemplate = require('./js/views/commodities');
+var commodityCardTemplate = require('./js/views/commodities/card');
+var consumerTemplate = require('./js/views/consumers');
+var consumerCardTemplate = require('./js/views/consumers/card');
 // var consumersTemplate = require('./js/pages/consumers');
 // var consumersCardTemplate = require('./js/pages/consumers/card');
 // var providersTemplate = require('./js/pages/providers');
@@ -15,7 +18,9 @@ var app = angular
 		'ui.router', 
 		'ngRoute', 
 		'commodityModule',
-		// 'consumerCardModule'
+		'commodityCardModule',
+		'consumerModule',
+		'consumerCardModule'
 	])
 
 	.controller('MainCtrl', function($scope) {
@@ -33,25 +38,36 @@ var app = angular
 	            	'content': commodityTemplate
 	            }
 	        })
-
-// 	        .state('consumers', {
-// 	            url: '/consumers',
-// 	            views: {
-// 	            	'content': consumersTemplate
-// 	            }
-// 	        })
-// 	        .state('consumer_add', {
-// 	            url: '/consumer/new',
-// 	            views: {
-// 	            	'content': consumersCardTemplate
-// 	            }
-// 	        })
-// 	        .state('consumer_modify', {
-// 	            url: '/consumer/modify',
-// 	            views: {
-// 	            	'content': consumersCardTemplate
-// 	            }
-// 	        })
+	        .state('commodity_add', {
+	            url: '/commodity/add',
+	            views: {
+	            	'content': commodityCardTemplate
+	            }
+	        })
+	        .state('commodity_modify', {
+	            url: '/commodity/modify',
+	            views: {
+	            	'content': commodityCardTemplate
+	            }
+	        })
+	        .state('consumers', {
+	            url: '/consumers',
+	            views: {
+	            	'content': consumerTemplate
+	            }
+	        })
+	        .state('consumer_add', {
+	            url: '/consumer/new',
+	            views: {
+	            	'content': consumerCardTemplate
+	            }
+	        })
+	        .state('consumer_modify', {
+	            url: '/consumer/modify',
+	            views: {
+	            	'content': consumerCardTemplate
+	            }
+	        })
 // 	        .state('providers', {
 // 	            url: '/providers',
 // 	            views: {

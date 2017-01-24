@@ -19,7 +19,8 @@
 	$query = "UPDATE $table SET name='$name', notes='$notes', mail='$mail', place='$place', region=$region, payment_option=$payment_option, worker=$worker, representatives='$representatives'";
 	$query .= " WHERE id=$id ";
 
-	$result = mysql_query($query) or die(mysql_error());
 	echo $query;
+
+	$result = mysql_query($query) or die(mysql_error());
 
 ?>

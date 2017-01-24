@@ -25,7 +25,10 @@ function CommodityService($http) {
     // };
 
     return $http
-      .post(API_SERVER + '/add.php', data)
+      .post(API_SERVER + '/add.php', data, {
+         transformRequest: angular.identity,
+         headers: {'Content-Type': undefined}
+       })
       .then(function (data) {
         return data.data;
       })
@@ -34,7 +37,7 @@ function CommodityService($http) {
       });
   }
 
-  function update(id, data) {
+  function update(data) {
     // data = {
     //   group: "6734a170-d283-11e6-9cca-3f6676d6a14c",
     //   name: "Енакиевский металлургический завод",
@@ -43,7 +46,10 @@ function CommodityService($http) {
 
     // id = "b5d5ae10-d390-11e6-804c-05a125667c41"; 
     return $http
-      .put(API_SERVER + '/update.php' + id, data)
+      .post(API_SERVER + '/update.php', data, {
+         transformRequest: angular.identity,
+         headers: {'Content-Type': undefined}
+       })
       .then(function (data) {
         return data.data;
       })
