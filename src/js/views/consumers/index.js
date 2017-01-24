@@ -18,22 +18,22 @@ module.exports = {
   template: require('./template.tpl'), 
   resolve: {
     consumerList: ['ConsumerService', function (ConsumerService) {
-		return ConsumerService.all()
-			.then(function(data) {
-				return data;
-			})
-    }],
-    workerList: ['WorkerService', function (WorkerService) {
-		return WorkerService.all()
-			.then(function(data) {
-				return data;
-			})
+  		return ConsumerService.all()
+  			.then(function(data) {
+  				return data;
+  			})
     }],
     regionList: ['RegionService', function(RegionService) {
-		return RegionService.all()
-			.then(function(data) {
-				return data;
-			})
+  		return RegionService.all()
+  			.then(function(data) {
+  				return data;
+  			})
+    }],
+    workerList: ['WorkerService', function (WorkerService) {
+      return WorkerService.all()
+        .then(function(data) {
+          return data;
+        })
     }]
   },  
   controller: 'ConsumerCtrl'

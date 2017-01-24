@@ -1,57 +1,68 @@
 'use strict';
 var _ = require('lodash');
+import { toSafeString, toUnsafeString } from '../../../libs/strings';
 
-function CommodityCardCtrl($scope, $state, CommodityService, currentCommodity) {
+function CardCtrl($scope, $state, MainService, workersList, regionsList, current) {
 
-	// console.log(currentCommodity);
-
-	if ($state.current.name === 'commodity_add') {
+	if ($state.current.name === 'consumer_add') {
 		$scope.submitCaption = "Add";
-		$scope.commodityName = "";
-		$scope.commodityPrice1 = 0.00;
-		$scope.commodityPrice2 = 0.00;
-		$scope.commodityPrice3 = 0.00;
-		// $scope.formUrl = $sce.trustAsResourceUrl('/users/' + user.id);
+		$scope.name = "";
+		$scope.representatives = "";
+		$scope.mail = "";
+		$scope.place = "";
+		$scope.notes = "";
+		$scope.currentRegion = regionsList[0].id;
+		$scope.currentManager = managersList[0].id;
 	} else {
+		current.name = toUnsafeString(current.name) //.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
+
 		$scope.submitCaption = "Update";
-		$scope.commodityName = currentCommodity.name;
-		$scope.commodityPrice1 = Number(currentCommodity.price1);
-		$scope.commodityPrice2 = Number(currentCommodity.price2);
-		$scope.commodityPrice3 = Number(currentCommodity.price3);
+		$scope.name = current.name;
+		$scope.representatives = current.representatives;
+		$scope.mail = current.mail;
+		$scope.place = current.place;
+		$scope.notes = current.notes;
+		$scope.currentRegion = current.region;
+		$scope.currentManager = current.worker;
 	}
+
+	$scope.workers = workersList;
+	$scope.regions = regionsList;
 
 	$scope.backToList = function(){
-		$state.go('commodities');
+		$state.go('consumers');
 	}
 
-	$scope.saveCommodity = function() {
+	$scope.save = function() {
 		var formData = new FormData();
 
-		formData.append('name', $scope.commodityName);
-		formData.append('price1', $scope.commodityPrice1);
-		formData.append('price2', $scope.commodityPrice2);
-		formData.append('price3', $scope.commodityPrice3);
-		formData.append('photo', $scope.commodityPhoto);
+		// check mail format
+		$scope.name = toSafeString( $scope.name ); // .replace(/\'/g, '&#39;').replace(/\"/g, '&#34;');
 
-		if ($state.current.name === 'commodity_add') {
-			CommodityService.add()
-				.then(function(newConsumer) {
+		formData.append('id', current.id);
+		formData.append('name', $scope.name);
+		formData.append('representatives', $scope.representatives);
+		formData.append('notes', $scope.notes);
+		formData.append('mail', $scope.mail);
+		formData.append('place', $scope.place);
+		formData.append('worker', $scope.managerList);
+		formData.append('region', $scope.regionList);
+		formData.append('payment_option', current ? current.payment_option : 5);
+
+		if ($state.current.name === 'consumer_add') {
+			MainService.add()
+				.then(function(newObject) {
+					console.log(newObject);
 					$scope.backToList();
 				})
 		} else {
-			formData.append('photoUrl', currentCommodity.photo);
-			formData.append('id', currentCommodity.id);
-			CommodityService.update(formData)
-				.then(function(updatedConsumer) {
+			MainService.update(formData)
+				.then(function(updatedObject) {
+					console.log(updatedObject);
 					$scope.backToList();
 				})
 		}
 	}
-
-
-
-	// $scope.saveCommodity = function() {
-	// }
 }
 
-module.exports = CommodityCardCtrl; 
+module.exports = CardCtrl; 

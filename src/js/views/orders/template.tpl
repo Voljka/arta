@@ -1,30 +1,30 @@
 <div class="page-filter">
-	<input ng-model="textFilter" type="text" ng-change="useFilter()" placeholder="Commodity name filter">
+	<input ng-model="textFilter" type="text" ng-change="useFilter()" placeholder="Consumer name filter">
 	<br>
 	<button class="btn btn-info" ng-click="add()">Add</button>
-	<button class="btn btn-info" ng-if="currentCommodity" ng-click="edit()">Update</button>
-	<button class="btn btn-info" ng-if="currentCommodity" ng-click="delete()">Delete</button>
-<!-- 	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goContract()">Contracts</button>
-	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goPayments()">Payments</button>
-	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goDeliveries()">Deliveries</button> -->
+	<button class="btn btn-info" ng-if="currentOrder" ng-click="edit()">Update</button>
+	<button class="btn btn-info" ng-if="currentOrder" ng-click="delete()">Delete</button>
+	<button class="btn btn-info" ng-click="showNotReported()">Show not Reported Yet</button>
 </div>
 
 <div class="page-content">
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<td>Name</td>
-				<td>Price 1</td>
-				<td>Price 2</td>
-				<td>Price 3</td>
+				<td>Consumer</td>
+				<td>Order Date</td>
+				<td>Manager</td>
+				<td>Report Date</td>
+				<td>Form</td>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-class="commodity.selected ? 'item-selected' : ''" ng-repeat="commodity in filteredObjects" ng-click="select(commodity)">
-				<td> {{ commodity.name }}</td>
-				<td class="price"> {{ numberSplitted(commodity.price1) }}</td>
-				<td class="price"> {{ numberSplitted(commodity.price2) }}</td>
-				<td class="price"> {{ numberSplitted(commodity.price3) }}</td>
+			<tr ng-class="order.selected ? 'item-selected' : ''" ng-repeat="order in filteredObjects" ng-click="select(order)">
+				<td> {{ order.consumer_name }}</td>
+				<td> {{ order.ordered_at }}</td>
+				<td> {{ order.worker_name }}</td>
+				<td> {{ order.reported_at }}</td>
+				<td> {{ order.form }}</td>
 			</tr>
 			
 		</tbody>

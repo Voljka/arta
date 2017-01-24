@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash');
+import { toSafeString, toUnsafeString } from '../../libs/strings';
 
 function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, ConsumerService) {
 
@@ -9,10 +10,12 @@ function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Cons
 	$scope.workers = workerList;
 	$scope.regions = regionList;
 
+	console.log($scope.workers);
+
 	$scope.consumers.map( function(consumer) {
 		var workerName = (_.find($scope.workers, { id: consumer.worker})).lastname;
 		var regionName = (_.find($scope.regions, { id: consumer.region})).name;
-		var name = consumer.name.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
+		var name = toUnsafeString( consumer.name );//.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
 
 		Object.assign(consumer, { worker_name: workerName, region_name: regionName , name: name });
 		return consumer;
@@ -25,9 +28,7 @@ function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Cons
 
 		$scope.consumers = _.map($scope.consumers, function(c) {
 			if (c.id === consumer.id) {
-				// if taken consumer is already selected
 				if (ConsumerService.current() == consumer) {
-					// deselect 
 					ConsumerService.select(undefined);
 					c.selected = false;
 					return c;

@@ -1,29 +1,19 @@
-<!-- <h3>Commodity Card</h3>
-<form action="saveCommodity()" enctype="multipart/form-data">
-	<input type="text" ng-model="commodityName">
-	<input type="number" ng-model="commodityPrice1">
-	<input type="number" ng-model="commodityPrice2">
-	<input type="number" ng-model="commodityPrice3">
-	<input type="file" ng-file-select="commodityPhoto">
-
-	<input type="submit" ng-value="{{ submitCaption }}">
-</form>
-
-<button class="btn btn-primary" ng-click="saveCommodity()">{{ submitCaption }}</button>
-<button class="btn btn-warning" ng-click="backToList()">Cancel</button>
- -->
-<h3>Commodity Card</h3>
-<input type="text" ng-model="commodityName">
-<input type="number" ng-model="commodityPrice1">
-<input type="number" ng-model="commodityPrice2">
-<input type="number" ng-model="commodityPrice3">
-<input type="file" file-model="commodityPhoto">
-
-<button class="btn btn-primary" ng-click="saveCommodity()">{{ submitCaption }}</button> 
-<button class="btn btn-warning" ng-click="backToList()">Cancel</button>
-
-<!-- <select class="select" ng-model="consumerGroup" ng-init="consumerGroup=consumerCurrentGroup">   
-	<option ng-repeat="group in groups" ng-value="group._id">{{ group.name }}</option>	
+<h3>Consumer Card</h3>
+<input type="text" ng-model="name">
+<select class="select" ng-model="regionList" ng-init="regionList=currentRegion">   
+	<option ng-repeat="region in regions" ng-value="region.id">{{ region.name }}</option>	
 </select>
- -->
+
+<input type=text ng-model="place">
+<input type=text ng-model="representatives">
+<input type=text ng-model="mail">
+<input type=text ng-model="notes">
+
+<select class="select" ng-model="managerList" ng-init="managerList=currentManager">   
+	<option ng-repeat="manager in workers" ng-value="manager.id">{{ manager.lastname }}</option>	
+</select>
+
+<button class="btn btn-primary" ng-click="save()">{{ submitCaption }}</button> 
+<button class="btn btn-warning" ng-click="backToList()">Cancel</button>
+
 <!-- <button class="btn btn-primary" ng-click="saveCommodity()">{{ submitCaption }}</button> -->

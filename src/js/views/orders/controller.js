@@ -1,30 +1,41 @@
 'use strict';
 var _ = require('lodash');
+import { toSafeString, toUnsafeString } from '../../libs/strings';
 
-function CommodityCtrl($scope, $state, CommodityService) {
+function OrderCtrl($scope, $state, consumerList, orderList, positionList, workerList, OrderService) {
 
-	$scope.currentCommmodity = CommodityService.current();
+	$scope.currentOrder = OrderService.current();
 
-	CommodityService.all()
-		.then(function(data) {
-			$scope.commodities = data;
+	$scope.consumers = consumerList;
+	$scope.orders = orderList;
+	$scope.workers = workerList;
+	$scope.positions = positionList;
 
-			filterObjects(); 
-		})
+	$scope.orders.map( function(order) {
+		console.log(_.find($scope.workers, { id: order.worker}));
+		console.log(_.find($scope.consumers, { id: order.consumer}))
+		var workerName = (_.find($scope.workers, { id: order.worker})).lastname;
+		var consumerName = (_.find($scope.consumers, { id: order.consumer})).name;
 
-	$scope.select = function(commodity) {
+		Object.assign(order, { worker_name: workerName, consumer_name: toUnsafeString( consumerName ) });
+		return order;
+	})
+
+	filterObjects($scope.orders); 
+
+	$scope.select = function(order) {
 		// if we select 
 
-		$scope.commodities = _.map($scope.commodities, function(c) {
-			if (c.id === commodity.id) {
+		$scope.orders = _.map($scope.orders, function(c) {
+			if (c.id === order.id) {
 				// if taken consumer is already selected
-				if (CommodityService.current() == commodity) {
+				if (OrderService.current() == order) {
 					// deselect 
-					CommodityService.select(undefined);
+					OrderService.select(undefined);
 					c.selected = false;
 					return c;
 				} else {
-					CommodityService.select(commodity);
+					OrderService.select(order);
 					c.selected = true;
 					return c;
 				}
@@ -34,7 +45,7 @@ function CommodityCtrl($scope, $state, CommodityService) {
 			}
 		})
 
-		$scope.currentCommodity = CommodityService.current();
+		$scope.currentOrder = OrderService.current();
 	}
 
 
@@ -43,34 +54,29 @@ function CommodityCtrl($scope, $state, CommodityService) {
 	}
 
 	$scope.add = function() {
-		$state.go('commodity_add');
+		$state.go('order_add');
 	}
 
 	$scope.edit = function() {
-		$state.go('commodity_modify');
+		$state.go('order_modify');
 	}
 
 	$scope.delete = function() {
-		CommodityService.delete();
+		OrderService.delete();
 	}
 
 	function filterObjects() {
 		
 		if (! $scope.filteredObjects) {
-			$scope.filteredObjects = $scope.commodities;
+			$scope.filteredObjects = $scope.orders;
 		} else {
-			$scope.filteredObjects = _.filter( $scope.commodities, function(o) {
-				var commodity = o.name.toLowerCase();
-				return commodity.indexOf($scope.textFilter.toLowerCase()) > -1
+			$scope.filteredObjects = _.filter( $scope.orders, function(o) {
+				var consumer = o.consumer_name.toLowerCase();
+				return consumer.indexOf($scope.textFilter.toLowerCase()) > -1
 			}) 
 		}
 	}
 
-	$scope.numberSplitted = function(num)  {
-		num = Number(num).toFixed(2);
-		return String(num).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')
-	}
-
 }
 
-module.exports = CommodityCtrl; 
+module.exports = OrderCtrl; 

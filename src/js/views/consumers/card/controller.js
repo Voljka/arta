@@ -1,5 +1,6 @@
 'use strict';
 var _ = require('lodash');
+import { toSafeString, toUnsafeString } from '../../../libs/strings';
 
 function CardCtrl($scope, $state, MainService, workersList, regionsList, current) {
 
@@ -13,7 +14,7 @@ function CardCtrl($scope, $state, MainService, workersList, regionsList, current
 		$scope.currentRegion = regionsList[0].id;
 		$scope.currentManager = managersList[0].id;
 	} else {
-		current.name = current.name.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'')
+		current.name = toUnsafeString(current.name) //.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
 
 		$scope.submitCaption = "Update";
 		$scope.name = current.name;
@@ -36,7 +37,7 @@ function CardCtrl($scope, $state, MainService, workersList, regionsList, current
 		var formData = new FormData();
 
 		// check mail format
-		$scope.name = $scope.name.replace(/\'/g, '&#39;').replace(/\"/g, '&#34;')
+		$scope.name = toSafeString( $scope.name ); // .replace(/\'/g, '&#39;').replace(/\"/g, '&#34;');
 
 		formData.append('id', current.id);
 		formData.append('name', $scope.name);
