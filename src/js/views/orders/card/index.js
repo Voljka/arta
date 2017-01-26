@@ -1,16 +1,22 @@
 var controller = require('./controller');
-var mainService = require('../../../services/ConsumerService');
-var regionService = require('../../../services/RegionService');
-var workerService = require('../../../services/WorkerService');
+var mainService = require('../../../services/OrderService');
+var consumerService = require('../../../services/ConsumerService');
+var commodityService = require('../../../services/CommodityService');
+var positionService = require('../../../services/PositionService');
+var deliveryDaysService = require('../../../services/DeliveryPlanService');
 
-angular.module('consumerCardModule', [])
+angular.module('orderCardModule', [])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.withCredentials = true;
   }])
+  
   .factory('MainService', ['$http', mainService])
-  .factory('RegionService', ['$http', regionService])
-  .factory('WorkerService', ['$http', workerService])
-  .controller('CardCtrl', ['$scope', '$state', 'MainService', 'workerList', 'regionList', 'current', controller])
+  .factory('ConsumerService', ['$http', consumerService])
+  .factory('CommodityService', ['$http', commodityService])
+  .factory('PositionService', ['$http', positionService])
+  .factory('DeliveryDaysService', ['$http', deliveryDaysService])
+
+  .controller('CardCtrl', ['$scope', '$state', 'current', 'consumerList', 'commodityList', 'positionList', 'deliveryDaysList', 'MainService', controller])
 
 module.exports = {
   template: require('./template.tpl'), 
@@ -18,18 +24,36 @@ module.exports = {
     current: ['MainService', function (MainService) {
      	return MainService.current();
     }],
-    workerList: ['WorkerService', function (WorkerService) {
-    return WorkerService.all()
+    consumerList: ['ConsumerService', function (ConsumerService) {
+    return ConsumerService.all()
       .then(function(data) {
         return data;
       })
     }],
-    regionList: ['RegionService', function(RegionService) {
-    return RegionService.all()
+    commodityList: ['CommodityService', function(CommodityService) {
+    return CommodityService.all()
       .then(function(data) {
         return data;
       })
-    }]    
+    }],
+    deliveryDaysList: ['DeliveryDaysService', function(DeliveryDaysService) {
+    return DeliveryDaysService.all()
+      .then(function(data) {
+        return data;
+      })
+    }],
+    positionList: ['PositionService', 'MainService', function(PositionService, MainService) {
+      var current = MainService.current();
+
+      if (current) {
+        return PositionService.byOrder(current.id)
+          .then(function(data) {
+            return data;
+          })
+      } else {
+        return [];
+      }
+    }],   
   },
   controller: 'CardCtrl'
 };

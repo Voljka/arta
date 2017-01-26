@@ -2,9 +2,11 @@
 var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../../libs/strings';
 
-function CardCtrl($scope, $state, MainService, workersList, regionsList, current) {
+function ConsumerCardCtrl($scope, $state, workersList, regionsList, current, MainService) {
 
-	if ($state.current.name === 'consumer_add') {
+	console.log($state.current.name);
+	
+	if ($state.current.name == 'consumer_add') {
 		$scope.submitCaption = "Add";
 		$scope.name = "";
 		$scope.representatives = "";
@@ -12,8 +14,11 @@ function CardCtrl($scope, $state, MainService, workersList, regionsList, current
 		$scope.place = "";
 		$scope.notes = "";
 		$scope.currentRegion = regionsList[0].id;
-		$scope.currentManager = managersList[0].id;
+		$scope.currentManager = workersList[0].id;
 	} else {
+
+		console.log('Current in controller');
+		console.log(current);
 		current.name = toUnsafeString(current.name) //.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
 
 		$scope.submitCaption = "Update";
@@ -65,4 +70,4 @@ function CardCtrl($scope, $state, MainService, workersList, regionsList, current
 	}
 }
 
-module.exports = CardCtrl; 
+module.exports = ConsumerCardCtrl; 

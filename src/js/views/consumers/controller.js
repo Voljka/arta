@@ -10,8 +10,6 @@ function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Cons
 	$scope.workers = workerList;
 	$scope.regions = regionList;
 
-	console.log($scope.workers);
-
 	$scope.consumers.map( function(consumer) {
 		var workerName = (_.find($scope.workers, { id: consumer.worker})).lastname;
 		var regionName = (_.find($scope.regions, { id: consumer.region})).name;

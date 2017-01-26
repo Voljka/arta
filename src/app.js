@@ -6,7 +6,8 @@ var commodityTemplate = require('./js/views/commodities');
 var commodityCardTemplate = require('./js/views/commodities/card');
 var consumerTemplate = require('./js/views/consumers');
 var consumerCardTemplate = require('./js/views/consumers/card');
-// var orderTemplate = require('./js/views/orders');
+var orderTemplate = require('./js/views/orders');
+var orderCardTemplate = require('./js/views/orders/card');
 // var consumersTemplate = require('./js/pages/consumers');
 // var consumersCardTemplate = require('./js/pages/consumers/card');
 // var providersTemplate = require('./js/pages/providers');
@@ -22,7 +23,8 @@ var app = angular
 		'commodityCardModule',
 		'consumerModule',
 		'consumerCardModule',
-		// 'orderModule'
+		'orderModule',
+		'orderCardModule',
 	])
 
 	.controller('MainCtrl', function($scope) {
@@ -70,12 +72,24 @@ var app = angular
 	            	'content': consumerCardTemplate
 	            }
 	        })
-	        // .state('orders', {
-	        //     url: '/orders',
-	        //     views: {
-	        //     	'content': orderTemplate
-	        //     }
-	        // })
+	        .state('orders', {
+	            url: '/orders',
+	            views: {
+	            	'content': orderTemplate
+	            }
+	        })
+	        .state('order_add', {
+	            url: '/order/add',
+	            views: {
+	            	'content': orderCardTemplate
+	            }
+	        })
+	        .state('order_modify', {
+	            url: '/order/modify',
+	            views: {
+	            	'content': orderCardTemplate
+	            }
+	        })
 // 	        .state('providers', {
 // 	            url: '/providers',
 // 	            views: {

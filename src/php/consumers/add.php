@@ -11,12 +11,13 @@
     $mail = $_POST['mail'];
     $notes = $_POST['notes'];
     $worker = $_POST['worker'];
+    $is_vip = $_POST['is_vip'];
 	//$curdate = date("Y-m-d");
 
 	/* Таблица MySQL, в которой хранятся данные */
 	$table = "consumers";
-	
-	$query = "INSERT INTO $table (name, region, payment_option, place, representatives, mail, notes, worker) VALUES (";
+
+	$query = "INSERT INTO $table (name, region, payment_option, place, representatives, mail, notes, worker, is_vip) VALUES (";
 	$query .="'$name',";
 	$query .="$region,";
 	$query .="$payment_option,";
@@ -24,7 +25,8 @@
 	$query .="'$representatives',";
 	$query .="'$mail',";
 	$query .="'$notes',";
-	$query .="$worker)";
+	$query .="$worker,";
+	$query .="$is_vip)";
 
 	echo $query;
 	

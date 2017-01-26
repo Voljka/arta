@@ -1,5 +1,7 @@
+'use strict'
+
 var controller = require('./controller');
-var mainService = require('../../../services/ConsumerService');
+var consumerService = require('../../../services/ConsumerService');
 var regionService = require('../../../services/RegionService');
 var workerService = require('../../../services/WorkerService');
 
@@ -7,16 +9,18 @@ angular.module('consumerCardModule', [])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.withCredentials = true;
   }])
-  .factory('MainService', ['$http', mainService])
+  .factory('ConsumerService', ['$http', consumerService])
   .factory('RegionService', ['$http', regionService])
   .factory('WorkerService', ['$http', workerService])
-  .controller('CardCtrl', ['$scope', '$state', 'MainService', 'workerList', 'regionList', 'current', controller])
+  .controller('ConsumerCardCtrl', ['$scope', '$state', 'workerList', 'regionList', 'current', 'ConsumerService', controller])
 
 module.exports = {
   template: require('./template.tpl'), 
   resolve: {
-    current: ['MainService', function (MainService) {
-     	return MainService.current();
+    current: ['ConsumerService', function (ConsumerService) {
+      console.log('current in Index');
+      console.log(ConsumerService.current())
+     	return ConsumerService.current();
     }],
     workerList: ['WorkerService', function (WorkerService) {
     return WorkerService.all()
@@ -31,5 +35,5 @@ module.exports = {
       })
     }]    
   },
-  controller: 'CardCtrl'
+  controller: 'ConsumerCardCtrl'
 };

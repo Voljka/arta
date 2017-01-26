@@ -2,35 +2,30 @@
 var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../libs/strings';
 
-function OrderCtrl($scope, $state, consumerList, orderList, positionList, workerList, OrderService) {
+
+function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
+
+	$scope.notReportedOnly = false;
+	$scope.textFilter = "";
 
 	$scope.currentOrder = OrderService.current();
-
+	
 	$scope.consumers = consumerList;
 	$scope.orders = orderList;
-	$scope.workers = workerList;
-	$scope.positions = positionList;
-
-	$scope.orders.map( function(order) {
-		console.log(_.find($scope.workers, { id: order.worker}));
-		console.log(_.find($scope.consumers, { id: order.consumer}))
-		var workerName = (_.find($scope.workers, { id: order.worker})).lastname;
-		var consumerName = (_.find($scope.consumers, { id: order.consumer})).name;
-
-		Object.assign(order, { worker_name: workerName, consumer_name: toUnsafeString( consumerName ) });
-		return order;
-	})
 
 	filterObjects($scope.orders); 
+
+	$scope.orders.map( function(order) {
+		order.consumer_name = toUnsafeString( order.consumer_name );
+		return order;
+	})
 
 	$scope.select = function(order) {
 		// if we select 
 
 		$scope.orders = _.map($scope.orders, function(c) {
 			if (c.id === order.id) {
-				// if taken consumer is already selected
 				if (OrderService.current() == order) {
-					// deselect 
 					OrderService.select(undefined);
 					c.selected = false;
 					return c;
@@ -48,6 +43,10 @@ function OrderCtrl($scope, $state, consumerList, orderList, positionList, worker
 		$scope.currentOrder = OrderService.current();
 	}
 
+	$scope.showNotReported = function() {
+		$scope.notReportedOnly = ! $scope.notReportedOnly;
+		filterObjects();
+	}
 
 	$scope.useFilter = function(){
 		filterObjects();
@@ -72,10 +71,20 @@ function OrderCtrl($scope, $state, consumerList, orderList, positionList, worker
 		} else {
 			$scope.filteredObjects = _.filter( $scope.orders, function(o) {
 				var consumer = o.consumer_name.toLowerCase();
-				return consumer.indexOf($scope.textFilter.toLowerCase()) > -1
+
+				var filterCondition = consumer.indexOf($scope.textFilter.toLowerCase()) > -1 ? true : false;
+
+				var reportedCondition = $scope.notReportedOnly && o.reported_at ? false : true;
+
+				return filterCondition && reportedCondition;
 			}) 
 		}
 	}
+	
+	$scope.numberSplitted = function(num)  {
+		num = Number(num).toFixed(2);
+		return String(num).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')
+	}	
 
 }
 

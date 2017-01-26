@@ -57,6 +57,20 @@ function Service($http) {
     current = selectedObject;
   }
 
+  function byOrder(orderId) {
+    return $http
+      .get(API_SERVER + '/byorder.php?order=' + orderId, {
+         transformRequest: angular.identity,
+         headers: {'Content-Type': undefined}
+       })
+      .then(function (data) {
+        return data.data;
+      })
+      .catch(function () {
+        return undefined;
+      });    
+  }
+
   return {
     all     : getAll,
     current : getCurrent,
@@ -64,6 +78,7 @@ function Service($http) {
     add        : add,
     update     : update,
     delete     : remove,    
+    byOrder    : byOrder,
   };
 }
 

@@ -17,6 +17,17 @@ function Service($http) {
       });
   }
 
+  function getAllDetailed() {
+    return $http
+      .get(API_SERVER + '/getAllDetailed.php', { cache: false })
+      .then(function (data) {
+        return data.data;
+      })
+      .catch(function () {
+        return undefined;
+      });
+  }
+
   function add(data) {
 
     return $http
@@ -46,6 +57,21 @@ function Service($http) {
       });
   }
 
+  function save(data) {
+    data = JSON.stringify(data);
+    return $http
+      .post(API_SERVER + '/save.php', data/*, { headers: {'Content-Type': "application/x-www-form-urlencoded; charset=UTF-8"}}*/)
+      .then(function (data) {
+        console.log('Success');
+        console.log(data.dada);
+        return data.data;
+      })
+      .catch(function () {
+        console.log('Error');
+        return undefined;
+      });
+  }
+
   function remove(id) {
   }
 
@@ -58,12 +84,14 @@ function Service($http) {
   }
 
   return {
-    all     : getAll,
-    current : getCurrent,
+    all        : getAll,
+    allDetailed: getAllDetailed,
+    current    : getCurrent,
     select     : select,
     add        : add,
     update     : update,
-    delete     : remove,    
+    delete     : remove,
+    save       : save,
   };
 }
 

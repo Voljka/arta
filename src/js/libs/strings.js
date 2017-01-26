@@ -1,11 +1,11 @@
 'use strict'
 
 export function toSafeString(str) {
-	var result = str.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'');
+	var result = str.replace(/\'/g, '&#39;').replace(/\"/g, '&#34;').replace(/\&/g, '&amp;');
 	return result;
 }
 
 export function toUnsafeString(str) {
-	var result = str.replace(/\'/g, '&#39;').replace(/\"/g, '&#34;');
+	var result = str.replace(/&#34;/g, '\"').replace(/&#39;/g, '\'').replace(/&amp;/g, '\&');
 	return result;
 }
