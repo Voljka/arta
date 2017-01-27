@@ -48,6 +48,30 @@ function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
 		filterObjects();
 	}
 
+	$scope.sendReport = function() {
+		OrderService.send()
+			.then( function(respond) {
+				// save Order as Reported
+				return OrderService.reported();
+			})
+			.then( function(reportedDate) {
+				$scope.orders.map( function(order) {
+					if ($scope.currentOrder.id == order.id) {
+						order.reported_at = reportedDate;
+						order.selected = false;
+					}
+
+					return order;
+				})
+
+				$scope.currentOrder = undefined;
+
+				OrderService.select(undefined);
+				filterObjects();
+			})
+	}
+
+
 	$scope.useFilter = function(){
 		filterObjects();
 	}
@@ -74,7 +98,7 @@ function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
 
 				var filterCondition = consumer.indexOf($scope.textFilter.toLowerCase()) > -1 ? true : false;
 
-				var reportedCondition = $scope.notReportedOnly && o.reported_at ? false : true;
+				var reportedCondition = $scope.notReportedOnly ? (o.reported_at ? false : true) : true;
 
 				return filterCondition && reportedCondition;
 			}) 

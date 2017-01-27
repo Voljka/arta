@@ -10,7 +10,8 @@
 
 	$query .= 		"SELECT order_id, SUM(price*quantity) order_sum FROM positions GROUP BY order_id ";
 
-	$query .=       ") AS details ON details.order_id = $table.id";
+	$query .=       ") AS details ON details.order_id = $table.id ";
+	$query .=       "ORDER BY orders.ordered_at DESC";
 	
 	// $query .= "";
 
