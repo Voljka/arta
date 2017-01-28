@@ -71,6 +71,17 @@ function Service($http) {
       });    
   }
 
+  function notDelivered() {
+    return $http
+      .get(API_SERVER + '/notdelivered.php')
+      .then(function (data) {
+        return data.data;
+      })
+      .catch(function () {
+        return undefined;
+      });    
+  }
+
   return {
     all     : getAll,
     current : getCurrent,
@@ -79,6 +90,7 @@ function Service($http) {
     update     : update,
     delete     : remove,    
     byOrder    : byOrder,
+    notDelivered: notDelivered,
   };
 }
 

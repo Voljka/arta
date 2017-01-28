@@ -8,6 +8,8 @@ var consumerTemplate = require('./js/views/consumers');
 var consumerCardTemplate = require('./js/views/consumers/card');
 var orderTemplate = require('./js/views/orders');
 var orderCardTemplate = require('./js/views/orders/card');
+var deliveryTemplate = require('./js/views/deliveries');
+var visitTemplate = require('./js/views/visits');
 // var consumersTemplate = require('./js/pages/consumers');
 // var consumersCardTemplate = require('./js/pages/consumers/card');
 // var providersTemplate = require('./js/pages/providers');
@@ -25,6 +27,8 @@ var app = angular
 		'consumerCardModule',
 		'orderModule',
 		'orderCardModule',
+		'deliveryModule',
+		'visitModule',
 	])
 
 	.controller('MainCtrl', function($scope) {
@@ -88,6 +92,18 @@ var app = angular
 	            url: '/order/modify',
 	            views: {
 	            	'content': orderCardTemplate
+	            }
+	        })
+	        .state('deliveries', {
+	            url: '/deliveries',
+	            views: {
+	            	'content': deliveryTemplate
+	            }
+	        })
+	        .state('visits', {
+	            url: '/visits',
+	            views: {
+	            	'content': visitTemplate
 	            }
 	        })
 // 	        .state('providers', {

@@ -78,6 +78,19 @@ function Service($http) {
     return $http
       .get(REPORT_API+ '/order.php?order=' + current.id)
       .then(function (data) {
+        console.log('Order Successfully sent');
+        return data.data;
+      })
+      .catch(function () {
+        console.log('Error');
+        return undefined;
+      });
+  }
+
+  function report() {
+    return $http
+      .get(REPORT_API+ '/delivery.php')
+      .then(function (data) {
         console.log('Report Successfully sent');
         return data.data;
       })
@@ -112,6 +125,17 @@ function Service($http) {
     current = selectedObject;
   }
 
+  function notDelivered() {
+    return $http
+      .get(API_SERVER+ '/allnotdelivered.php')
+      .then(function (data) {
+        return data.data;
+      })
+      .catch(function () {
+        return undefined;
+      });
+  }
+
   return {
     all        : getAll,
     allDetailed: getAllDetailed,
@@ -123,6 +147,8 @@ function Service($http) {
     save       : save,
     send       : send,
     reported   : reported,
+    allNotDeliveredYet: notDelivered,
+    report     : report,
   };
 }
 
