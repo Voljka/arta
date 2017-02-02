@@ -43,6 +43,7 @@ function Service($http) {
 
   function removeReport(reportId) {
 
+    console.log('Trying to delete report # ' + reportId);
     return $http
       .post(API_SERVER + '/removeReport.php', {id: reportId})
       .then(function (data) {
@@ -53,10 +54,12 @@ function Service($http) {
       });
   }
 
-  function sendReport(startDate, managerId) {
+  function sendReport(selfMailing) {
+    console.log('sending Mailing ' + selfMailing);
 
     return $http
-      .get(REPORT_API+ '/route.php?start_date='+startDate+'&manager='+managerId)
+      .get(REPORT_API+ '/route.php?mailing='+selfMailing)
+      // .post(REPORT_API+ '/route.php', {mailing: selfMailing})
       .then(function (result) {
         console.log('Visit Report Successfully sent');
         return result.data;
@@ -75,6 +78,20 @@ function Service($http) {
     current = selectedObject;
   }
 
+  function reported() {
+    return $http
+      .post(API_SERVER+ '/reported.php', {id: 1})
+      .then(function (data) {
+        console.log(data);
+        console.log('Report saved in DB as reported');
+        return data.data;
+      })
+      .catch(function () {
+        console.log('Error dutring save order as reported');
+        return undefined;
+      });    
+  }
+
   return {
     allReports   : allReports,
     allVisits: allVisits,
@@ -82,6 +99,8 @@ function Service($http) {
     currentReport    : currentReport,
     selectReport  : selectReport,
     sendReport       : sendReport,
+    reported: reported,
+    delete : removeReport,
   };
 }
 

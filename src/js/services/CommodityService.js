@@ -25,10 +25,7 @@ function CommodityService($http) {
     // };
 
     return $http
-      .post(API_SERVER + '/add.php', data, {
-         transformRequest: angular.identity,
-         headers: {'Content-Type': undefined}
-       })
+      .post(API_SERVER + '/add.php', data)
       .then(function (data) {
         return data.data;
       })
@@ -46,10 +43,7 @@ function CommodityService($http) {
 
     // id = "b5d5ae10-d390-11e6-804c-05a125667c41"; 
     return $http
-      .post(API_SERVER + '/update.php', data, {
-         transformRequest: angular.identity,
-         headers: {'Content-Type': undefined}
-       })
+      .post(API_SERVER + '/update.php', data)
       .then(function (data) {
         return data.data;
       })

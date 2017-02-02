@@ -3,11 +3,12 @@ var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../libs/strings';
 
 
-function VisitReportCtrl($scope, $state, reportList, VisitService){
+function VisitReportCtrl($scope, $state, reportList, Flash, VisitService){
 
 	$scope.notReportedOnly = false;
 
-	$state.currentReport =  ($state.current.name == 'visit_report_add') ? undefined : VisitService.currentReport();
+	$state.currentReport = VisitService.currentReport();
+	$scope.selfMailing = false;
 	
 	reportList.map( function(report) {
 		report.lastname = toUnsafeString( report.lastname );
@@ -45,27 +46,30 @@ function VisitReportCtrl($scope, $state, reportList, VisitService){
 
 	$scope.sendReport = function() {
 
-		var startDate = '2017-01-23',
-			manager = 1;
+		var manager = 1;
 
-		VisitService.sendReport(startDate, manager)
+		VisitService.sendReport(Number($scope.selfMailing))
 			.then( function(respond) {
+				console.log(respond);
+
+		        var message = '<strong>Отчет о маршрутизации успешно отправлен!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+
 				// save Order as Reported
-				return VisitService.reported();
-			})
-			.then( function(reportedDate) {
-				$scope.reports.map( function(report) {
-					if ($scope.currentReport.id == report.id) {
-						report.reported_at = reportedDate;
-						report.selected = false;
-					}
+				if (! $scope.selfMailing) {
+					return VisitService.reported()
+						.then( function(reportedDate) {
+							VisitService.allReports()
+								.then( function(data) {
+									reportList = data;
+									filterObjects();
+								})
 
-					return report;
-				})
+							$scope.currentReport = undefined;
 
-				$scope.currentReport = undefined;
-
-				VisitService.select(undefined);
+							VisitService.selectReport(undefined);
+						})
+				}
 			})
 	}
 
@@ -78,13 +82,26 @@ function VisitReportCtrl($scope, $state, reportList, VisitService){
 	}
 
 	$scope.delete = function() {
-		OrderService.delete();
+		VisitService.delete($scope.currentReport.id)
+			.then( function(data) {
+				console.log(data);
+				VisitService.allReports()
+					.then( function(data) {
+						reportList = data;
+
+						reportList.map( function(report) {
+							report.lastname = toUnsafeString( report.lastname );
+							return report;
+						})						
+						filterObjects();
+					})
+			}) ;
 	}
 
 	function filterObjects() {
 		if ($scope.notReportedOnly) {
 			$scope.reports = _.filter( reportList, function(o){
-				return ! o.reported_at;
+				return o.reported_at == null;
 			})
 		} else {
 			$scope.reports = reportList;

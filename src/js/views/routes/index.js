@@ -1,38 +1,41 @@
-'use strict'
-var _ = require('lodash');
-require('angular-flash-alert');  
-
 var controller = require('./controller');
-var orderService = require('../../services/OrderService');
 var consumerService = require('../../services/ConsumerService');
+var regionService = require('../../services/RegionService');
 
-angular.module('orderModule', ['ngFlash'])
+require('angular-flash-alert');
+
+require('angular-drag-and-drop-lists');
+
+angular.module('routingModule', ['dndLists', 'ngFlash'])
   .config(['$httpProvider', function($httpProvider) {
     $httpProvider.defaults.withCredentials = true;
   }])
+
   .config((FlashProvider) => {
       FlashProvider.setTimeout(5000);
       FlashProvider.setShowClose(true);
   })
+
   .factory('ConsumerService', ['$http', consumerService])
-  .factory('OrderService', ['$http', orderService])
-  .controller('OrderCtrl', ['$scope', '$state', 'consumersList', 'ordersList', 'Flash', 'OrderService', controller]);
+  .factory('RegionService', ['$http', regionService])
+
+  .controller('RoutingCtrl', ['$scope', '$state', 'consumerList', 'regionList', 'Flash', 'ConsumerService',controller])
 
 module.exports = {
   template: require('./template.tpl'), 
   resolve: {
-    consumersList: ['ConsumerService', function (ConsumerService) {
+    consumerList: ['ConsumerService', function (ConsumerService) {
     return ConsumerService.all()
       .then(function(data) {
         return data;
       })
     }],
-    ordersList: ['OrderService', function (OrderService) {
-    return OrderService.allDetailed()
+    regionList: ['RegionService', function (RegionService) {
+    return RegionService.all()
       .then(function(data) {
         return data;
       })
     }],
-  },  
-  controller: 'OrderCtrl'
+  },
+  controller: 'RoutingCtrl'
 };

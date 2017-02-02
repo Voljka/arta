@@ -1,25 +1,21 @@
 <div class="page-filter">
-	<input ng-model="textFilter" type="text" ng-change="useFilter()" placeholder="Consumer name filter">
+	<input ng-model="textFilter" type="text" ng-change="useFilter()" placeholder="Фильтр">
 	<br>
-	<button class="btn btn-info" ng-click="add()">Add</button>
-	<button class="btn btn-info" ng-if="currentConsumer" ng-click="edit()">Update</button>
-	<button class="btn btn-info" ng-if="currentConsumer" ng-click="delete()">Delete</button>
-<!-- 	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goContract()">Contracts</button>
-	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goPayments()">Payments</button>
-	<button class="btn btn-default" ng-if="currentCommodity" ng-cilck="goDeliveries()">Deliveries</button> -->
+	<button class="btn btn-info" ng-click="add()">Добавить клиент</button>
+	<button class="btn btn-info" ng-if="currentConsumer" ng-click="edit()">Изменить клиента</button>
+	<!-- <button class="btn btn-info" ng-if="currentConsumer" ng-click="delete()">Удалить клиента</button> -->
 </div>
-
-<div class="page-content">
+<div class="consumers-div">
 	<table class="table table-bordered">
 		<thead>
 			<tr>
-				<td>Name</td>
-				<td>Region</td>
-				<td>Place</td>
-				<td>Representatives</td>
+				<td>Название клиента</td>
+				<td>Район</td>
+				<td>Адрес</td>
+				<td>Представители</td>
 				<td>Mail</td>
-				<td>Manager</td>
-				<td>Notes</td>
+				<td>Менеджер</td>
+<!-- 				<td></td> -->
 			</tr>
 		</thead>
 		<tbody>
@@ -30,7 +26,7 @@
 				<td> {{ consumer.representatives }}</td>
 				<td> {{ consumer.mail }}</td>
 				<td> {{ consumer.worker_name }}</td>
-				<td> {{ consumer.notes }}</td>
+				<!-- <td> {{ consumer.notes }}</td> -->
 			</tr>
 			
 		</tbody>

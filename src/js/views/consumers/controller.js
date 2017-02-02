@@ -6,6 +6,13 @@ function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Cons
 
 	$scope.currentConsumer = ConsumerService.current();
 
+	consumerList = consumerList.map( function(consumer) {
+		var name = toUnsafeString( consumer.name );
+
+		Object.assign(consumer, { name: name });
+		return consumer;
+	})
+
 	$scope.consumers = consumerList;
 	$scope.workers = workerList;
 	$scope.regions = regionList;

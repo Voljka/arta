@@ -4,7 +4,7 @@ header('Content-Type: text/html; charset=utf8');
 require_once ('../libs/phpexcel/Classes/PHPExcel/IOFactory.php');
 require_once ('../libs/PHPMailer/PHPMailerAutoload.php');
 
-function sendReport($subject, $message, $file) {
+function sendReport($subject, $message, $file, $self) {
 
 	$to  = "Admin <voljka13@gmail.com>" ; 
 
@@ -18,8 +18,15 @@ function sendReport($subject, $message, $file) {
 
 	$email->CharSet = "UTF-8";
 
+	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
 	$email->addAddress( 'voljka13@gmail.com' );
+	// $email->addAddress( 'nazarevao1703@gmail.com' );
+
+	if (! $self) {
+		$email->addAddress( 'voljka@inbox.ru' );
+		// $email->addAddress( 'deroored80@mail.ru' );
+	}
 
 	$email->addAttachment('/home/idesk/i-desk.xyz/arta-lugansk/php/reports/delivery_report.xls');
 	$email->isHTML(true);                                  // Set email format to HTML
@@ -32,7 +39,7 @@ function sendReport($subject, $message, $file) {
 
 function unsafe($str) {
 	$str = str_replace('&#39;', '\'', $str);
-	$str = str_replace('&#34;', '\"', $str);
+	$str = str_replace('&#34;', '"', $str);
 	return $str;
 }
 
@@ -47,12 +54,16 @@ $objReader = PHPExcel_IOFactory::createReaderForFile($filepath);
 $objPHPExcel = $objReader->load($filepath);
 
 // Get orders from DB
-
+$self_mailing = $_GET['mailing'];
 require ('../config/db.config.php');
 
 $table = "orders";
 
-$curdate = date("Y-m-d"). " 00:00:00";
+// $curdate = date("Y-m-d"). " 00:00:00";
+$curdate = date("Y-m-d");
+
+// $delivery_date = date("Y-m-d", strtotime($curdate) + 24*60*60) . " 00:00:00";
+$delivery_date = date("Y-m-d", strtotime($curdate) + 24*60*60);
 
 $query = "SELECT $table.*, workers.lastname manager_name, consumers.name consumer_name, consumers.place, details.order_sum, details.position_reported_at FROM $table ";
 $query .= " LEFT JOIN workers ON workers.id = $table.worker";
@@ -64,7 +75,8 @@ $query .= 		" LEFT JOIN deliveries ON deliveries.position = positions.id ";
 $query .= " GROUP BY order_id ";
 
 $query .=       ") AS details ON details.order_id = $table.id ";
-$query .=       "WHERE details.order_sum > 0 AND $table.planned_delivery_at = '$curdate' ";	
+$query .=       "WHERE details.order_sum > 0 AND SUBSTRING($table.planned_delivery_at,1,10) = '$delivery_date' AND $table.self_delivery = 0 AND $table.reported_at IS NOT NULL ";	
+// $query .=       "WHERE details.order_sum > 0 AND $table.planned_delivery_at = '$delivery_date' AND $table.self_delivery = 0 AND $table.reported_at IS NOT NULL ";	
 $query .=       "ORDER BY orders.planned_delivery_at";
 
 $result = mysql_query($query) or die(mysql_error());
@@ -83,7 +95,7 @@ $objPHPExcel->setActiveSheetIndex(0);
 $ews = $objPHPExcel->setActiveSheetIndex(0);
 // Order Header
 $ews->setCellValue('C1', $orders[0]['manager_name']);
-$ews->setCellValue('C2', date_formatted( date("Y-m-d") ));
+$ews->setCellValue('C2', date_formatted( substr($delivery_date, 0, 10) ));
 
 // Order Body
 
@@ -100,7 +112,7 @@ for ($i = 0; $i < count($orders); $i++) {
 
 // Total Rows
 
-$ews->setCellValue('A' . ($i+$table_body_start_line+1), 'TOTAL');
+$ews->setCellValue('A' . ($i+$table_body_start_line+1), 'ИТОГО');
 $ews->setCellValue('D' . ($i+$table_body_start_line+1), $total);
 
 $table_body = 'A' . $table_body_start_line .':F'. ($i + $table_body_start_line - 1);
@@ -164,11 +176,12 @@ $objWriter->save($orderFileName);
 $objPHPExcel->disconnectWorksheets();
 unset($objWriter, $objPHPExcel);
 
+echo 'mailing = ' . $self_mailing;
 echo 'Finished';
 
 $report_subject = 'Отчет об отгрузках. ' . unsafe($orders[0]['manager_name']) . '. Доставка: ' . date_formatted( date("Y-m-d"));
 $report_message = 'Добрый день!<br>Отчет об огрузке<br>Торговый представитель: ' . unsafe($orders[0]['manager_name']) . '.<br>Дата поставки: ' . date_formatted( date("Y-m-d"));
 
-sendReport( $report_subject, $report_message, $orderFileName);
+sendReport( $report_subject, $report_message, $orderFileName, (intval($self_mailing) == 1 ? true : false));
 
 ?>

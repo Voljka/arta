@@ -10,12 +10,8 @@ var orderTemplate = require('./js/views/orders');
 var orderCardTemplate = require('./js/views/orders/card');
 var deliveryTemplate = require('./js/views/deliveries');
 var visitTemplate = require('./js/views/visits');
-// var consumersTemplate = require('./js/pages/consumers');
-// var consumersCardTemplate = require('./js/pages/consumers/card');
-// var providersTemplate = require('./js/pages/providers');
-// var mediatorsTemplate = require('./js/pages/mediators');
-// var summariesTemplate = require('./js/pages/summaries');
-// var directoriesTemplate = require('./js/pages/directories');
+var visitCardTemplate = require('./js/views/visits/card');
+var routingTemplate = require('./js/views/routes');
 
 var app = angular
 	.module('artaApp', [
@@ -29,6 +25,8 @@ var app = angular
 		'orderCardModule',
 		'deliveryModule',
 		'visitModule',
+		'visitCardModule',
+		'routingModule',
 	])
 
 	.controller('MainCtrl', function($scope) {
@@ -37,7 +35,7 @@ var app = angular
 
 	.config(function($stateProvider, $urlRouterProvider) {
     
-    	$urlRouterProvider.otherwise('/commodities');
+    	$urlRouterProvider.otherwise('/orders');
     
     	$stateProvider
 	        .state('commodities', {
@@ -106,37 +104,22 @@ var app = angular
 	            	'content': visitTemplate
 	            }
 	        })
-// 	        .state('providers', {
-// 	            url: '/providers',
-// 	            views: {
-// 	            	'content': providersTemplate
-// 	            }
-// 	        })
-// 	        .state('mediators', {
-// 	            url: '/mediators',
-// 	            views: {
-// 	            	'content': mediatorsTemplate
-// 	            }
-// 	        })
-// 	        .state('summaries', {
-// 	            url: '/summaries',
-// 	            views: {
-// 	            	'content': summariesTemplate
-// 	            }
-// 	        })
-// 	        .state('directories', {
-// 	            url: '/directories',
-// 	            views: {
-// 	            	'content': directoriesTemplate
-// 	            }
-// 	        })
-// 	        // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
-// 	        .state('about', {
-// 	            url: '/about',
-// 	            views: {
-// 	            	'content':  {
-// 	            		template:"This is the coolest app!" 
-// 	            	}
-// 	            }
-// 	        });     
+	        .state('visit_report_add', {
+	            url: '/visit/add',
+	            views: {
+	            	'content': visitCardTemplate
+	            }
+	        })
+	        .state('visit_report_modify', {
+	            url: '/visit/modify',
+	            views: {
+	            	'content': visitCardTemplate
+	            }
+	        })
+	        .state('routing', {
+	            url: '/routing',
+	            views: {
+	            	'content': routingTemplate
+	            }
+	        })
 })

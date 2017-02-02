@@ -13,6 +13,9 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 
 	commodityList.map( function(obj) {
 		var name = toUnsafeString( obj.name );
+		if (obj.is_old == 1) {
+			name = 'яяяСтарый__ ' + name;
+		}
 
 		Object.assign(obj, { name: name });
 		return obj;
@@ -44,32 +47,74 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 		order: $state.current.name == "order_modify" ? current.id : "new"
 	}
 
-
 	$scope.editingMode = false;
 	$scope.toBeSaved = false;
 
 	$scope.consumers = consumerList;
-	$scope.commodities = commodityList;
+	//$scope.commodities = commodityList;
+
+	$scope.filters = {
+		commodity : "",
+		consumer : ""
+	}
+
+	$scope.checkForSaveNeedings = function() {
+		$scope.toBeSaved = true;
+
+	}
+
+	$scope.useConsumerFilter = function() {
+		$scope.consumers = _.filter( consumerList, function(o) {
+			var consumer = o.name.toLowerCase();
+			return consumer.indexOf($scope.filters.consumer.toLowerCase()) > -1
+		})
+
+		if ($scope.consumers.length > 0) {
+			$scope.consumerList = $scope.consumers[0].id;
+			$scope.changeConsumer();
+		}
+
+	}
+
+	$scope.useFilter = function(position) {
+		if (! $scope.commodities) {
+			$scope.commodities = commodityList;
+		} else {
+			$scope.commodities = _.filter( commodityList, function(o) {
+				var commodity = o.name.toLowerCase();
+				return commodity.indexOf($scope.filters.commodity.toLowerCase()) > -1
+			})
+
+			if ($scope.commodities.length > 0) {
+				$scope.comSelect = $scope.commodities[0].id;
+				
+				
+				$scope.positions.map( function(o) {
+					if (o.id == position.id) {
+						o.commodity = $scope.commodities[0].id;
+						$scope.changeCommodity(o);
+					}
+
+					return o;
+				})
+			}
+		}		
+	}
+
+	$scope.useFilter();
 	$scope.positions = positionList;
 
-	// $scope.consumers.map( function(consumer) {
-	// 	var name = toUnsafeString( consumer.name );
-
-	// 	Object.assign(consumer, { name: name });
-	// 	return consumer;
-	// })
-	
 
 	$scope.currentOrder = current;
 
-
-	$scope.currentConsumer = ($state.current.name === 'order_modify') ? current.consumer : $scope.consumers[0].id;
+	$scope.currentConsumer = ($state.current.name == 'order_modify') ? current.consumer : $scope.consumers[0].id;
+	$scope.self_delivery = ($state.current.name == 'order_modify') ? Boolean(Number(current.self_delivery)) : 0;
 	
 	$scope.fullConsumer = _.find(consumerList, {id: $scope.currentConsumer});
 	var currentIsVip = $scope.fullConsumer.is_vip;
 
-	$scope.currentForm = ($state.current.name === 'order_modify') ? current.form : "1";
-	$scope.deliveryDate = ($state.current.name === 'order_modify') ? (new Date(current.planned_delivery_at.substr(0,10))) : (new Date( plannedDelivery() ));
+	$scope.currentForm = ($state.current.name == 'order_modify') ? current.form : "1";
+	$scope.deliveryDate = ($state.current.name == 'order_modify') ? (new Date(current.planned_delivery_at.substr(0,10))) : (new Date( plannedDelivery() ));
 
 	orderChanges.planned_delivery_at = formattedDate( $scope.deliveryDate );
 	orderChanges.consumer = $scope.fullConsumer.id;
@@ -77,26 +122,41 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	if ($scope.fullConsumer.is_vip == 1) {
 		$scope.priceType = 1;
 	} else {
-		$scope.priceType = 3;
+		if ($scope.self_delivery) {
+			$scope.priceType = 1;
+		} else {
+			$scope.priceType = 3;
+		}
 	}
 
-	// filterObjects($scope.consumers); 
+	$scope.changeSelfDelivery = function(){
+		var bySelf = $scope.self_delivery ? 1 : 0;
 
-	// $scope.useFilter = function(){
-	// 	filterObjects();
-	// }
+		if (Number($scope.fullConsumer.is_vip) != 1) {
+			if ($scope.self_delivery) {
+				setNewPrices(1);
 
-	// function filterObjects() {
-		
-	// 	if (! $scope.filteredObjects) {
-	// 		$scope.filteredObjects = $scope.consumers;
-	// 	} else {
-	// 		$scope.filteredObjects = _.filter( $scope.consumers, function(o) {
-	// 			var consumer = o.name.toLowerCase();
-	// 			return consumer.indexOf($scope.textFilter.toLowerCase()) > -1
-	// 		}) 
-	// 	}
-	// }
+				$scope.priceType = 1;
+
+				orderChanges.edited = _.filter($scope.positions, function(o){
+					return ! o.new;
+				});					
+
+				orderChanges.added = _.filter($scope.positions, function(o){
+					return o.new;
+				});					
+
+			} else {
+				$scope.orderSum();
+			}
+		}
+
+		if ($state.current.name == 'order_modify' && MainService.current().self_delivery != bySelf) {
+			$scope.toBeSaved = true;
+		}
+
+		$scope.toBeSaved = true;
+	}
 
 	function formattedDate(dat){
 		var curr_date = dat.getDate();
@@ -150,6 +210,10 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.add = function() {
+		$scope.filters.commodity = "";
+		$scope.commodities = commodityList;
+		$scope.comSelect = commodityList[0].id;
+
 		var newPosition = {};
 
 		newPosition.new = true;
@@ -175,6 +239,8 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.modifyPosition = function(id) {
+		$scope.filters.commodity = "";
+		$scope.commodities = commodityList;
 
 		$scope.positions.map( function(position) {
 			if (position.id == id) {
@@ -190,41 +256,51 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.changeCommodity = function(position) {
-		var selectedCommodity = _.find(commodityList, {id: position.commodity});
+		if (position.commodity) {
+			var selectedCommodity = _.find(commodityList, {id: position.commodity});
 
-		position.commodity_name = selectedCommodity.name;
+			position.commodity_name = selectedCommodity.name;
 
-		if (($scope.fullConsumer.is_vip == 1)) {
-			position.price = Number((selectedCommodity).price1);
-		} else {
-			position.price = Number((selectedCommodity).price3);
+			if (($scope.fullConsumer.is_vip == 1)) {
+				position.price = Number((selectedCommodity).price1);
+			} else {
+				position.price = Number((selectedCommodity).price3);
+			}
 		}
 	}
 
 	$scope.changeConsumer = function(){
-		$scope.fullConsumer = _.find(consumerList, {id: $scope.consumerList});
 
-		$scope.deliveryDate = new Date( plannedDelivery(_.find(consumerList, {id: $scope.consumerList})) );
-		orderChanges.planned_delivery_at = formattedDate( $scope.deliveryDate );
-
-		if (currentIsVip != $scope.fullConsumer.is_vip) {
-			currentIsVip = $scope.fullConsumer.is_vip;
-			setNewPrices();
-			orderChanges.edited = _.filter($scope.positions, function(o){
-				return ! o.new;
-			});
-		}
-
-		if (currentIsVip == 1) {
-			$scope.priceType = 1;
-		}
-
-		if ($state.current.name == 'order_modify' && $scope.fullConsumer.id != $scope.current.consumer ) {
+		if ($scope.consumers.length > 0) {
 			$scope.toBeSaved = true;
+			$scope.fullConsumer = _.find(consumerList, {id: $scope.consumerList});
 
-		} 
+			$scope.deliveryDate = new Date( plannedDelivery(_.find(consumerList, {id: $scope.consumerList})) );
+			orderChanges.planned_delivery_at = formattedDate( $scope.deliveryDate );
 
-		orderChanges.consumer = $scope.fullConsumer.id;
+			if (currentIsVip != $scope.fullConsumer.is_vip) {
+				currentIsVip = $scope.fullConsumer.is_vip;
+				setNewPrices();
+				orderChanges.edited = _.filter($scope.positions, function(o){
+					return ! o.new;
+				});
+			}
+
+			if (currentIsVip == 1) {
+				$scope.priceType = 1;
+			}
+
+			if ($state.current.name == 'order_modify' && $scope.fullConsumer.id != $scope.current.consumer ) {
+				$scope.toBeSaved = true;
+
+			} 
+
+			orderChanges.consumer = $scope.fullConsumer.id;
+
+		} else {
+			$scope.toBeSaved = false;
+			$scope.fullConsumer = {place: ""};
+		}
 
 	}
 
@@ -232,6 +308,10 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 		if (! position.new) {
 			orderChanges.deleted.push(position.id);
 			$scope.toBeSaved = true;
+		} else {
+			orderChanges.added = orderChanges.added.filter( function(o) {
+				return o.id != position.id;
+			})
 		}
 
 		$scope.positions = _.filter($scope.positions, function(o){
@@ -307,45 +387,62 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 		var resultByPrice3 = 0;
 
 		$scope.positions.forEach( function(position) {
-			result += position.quantity * position.price;
-			resultByPrice3 += position.quantity * Number((_.find( $scope.commodities, {id: position.commodity} )).price3);
+			if (position.new && $scope.commodities.length == 0) {
+			} else {
+				result += position.quantity * position.price;
+				resultByPrice3 += position.quantity * Number((_.find( $scope.commodities, {id: position.commodity} )).price3);
+			}
 		})
 
+		if (! (($scope.fullConsumer.is_vip == 1)) && ! $scope.self_delivery ) {
 
-		if (! (($scope.fullConsumer.is_vip == 1))) {
-
-			if (resultByPrice3 > 50000) {
-				if ($scope.priceType != 1) {
-					// set price1 as a price 
-					setNewPrices(1);
-					$scope.priceType = 1;
-					orderChanges.edited = _.filter($scope.positions, function(o){
-						return ! o.new;
-					});					
-				}
-			} else {
-				if (resultByPrice3 >= 10000) {
-					if ($scope.priceType != 2) {
-						// set price2 as a price 
-						setNewPrices(2);
-						$scope.priceType = 2;
+				if (resultByPrice3 > 50000) {
+					if ($scope.priceType != 1) {
+						// set price1 as a price 
+						setNewPrices(1);
+						$scope.priceType = 1;
 						orderChanges.edited = _.filter($scope.positions, function(o){
 							return ! o.new;
 						});					
+
+						orderChanges.added = _.filter($scope.positions, function(o){
+							return o.new;
+						});					
 					}
 				} else {
-					if (resultByPrice3 < 10000) {
-						if ($scope.priceType != 3) {
-							// set price1 as a price 
-							setNewPrices(3);
-							$scope.priceType = 3;
+					if (resultByPrice3 >= 10000) {
+						if ($scope.priceType != 2) {
+							// set price2 as a price 
+							setNewPrices(2);
+							$scope.priceType = 2;
 							orderChanges.edited = _.filter($scope.positions, function(o){
 								return ! o.new;
 							});					
+
+							orderChanges.added = _.filter($scope.positions, function(o){
+								return o.new;
+							});					
+						}
+					} else {
+						if (resultByPrice3 < 10000) {
+							if ($scope.priceType != 3) {
+								// set price1 as a price 
+								setNewPrices(3);
+								$scope.priceType = 3;
+								//////////////////
+								//////////////////
+								////////////////// updated added part of orderChanges
+								orderChanges.edited = _.filter($scope.positions, function(o){
+									return ! o.new;
+								});					
+
+								orderChanges.added = _.filter($scope.positions, function(o){
+									return o.new;
+								});					
+							}
 						}
 					}
 				}
-			}
 		} else {
 
 		}
@@ -355,50 +452,39 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 
 	function setNewPrices(type){
 		$scope.positions.map( function(position) {
-
-			var com = (_.find( $scope.commodities, {id: position.commodity} ));
-			
-			if ($scope.fullConsumer.is_vip == 1) {
-				position.price = com.price1;
+			if (position.new && $scope.commodities.length == 0) {
 
 			} else {
-				switch (type) {
-					case 1: 
-						position.price = com.price1;
-						break;
-					case 2: 
-						position.price = com.price2;
-						break;
-					default: 
-						position.price = com.price3;
-				}
+				var com = (_.find( $scope.commodities, {id: position.commodity} ));
+				
+				if ($scope.fullConsumer.is_vip == 1) {
+					position.price = com.price1;
 
+				} else {
+					switch (type) {
+						case 1: 
+							position.price = com.price1;
+							break;
+						case 2: 
+							position.price = com.price2;
+							break;
+						default: 
+							position.price = com.price3;
+					}
+
+				}
 			}
 
 			return position;
 		})
 	}
 
-	// function filterObjects() {
-		
-	// 	if (! $scope.consumers) {
-	// 		$scope.consumers = consumerList;
-	// 	} else {
-	// 		$scope.consumers = _.filter( consumerList, function(o) {
-	// 			var consumer = o.name.toLowerCase();
-	// 			return consumer.indexOf($scope.filterConsumer.toLowerCase()) > -1
-	// 		}) 
-	// 	}
-	// }
-
-	// $scope.useFilter = function(){
-	// 	filterObjects();
-	// }		
-
 	$scope.saveOrder = function() {
 		console.log('Save Order changes: ');
 		orderChanges.form = $scope.formSelect;
+		orderChanges.self_delivery = $scope.self_delivery ? 1 : 0;
 		orderChanges.ordered_at = ($state.current.name == "order_modify" ? current.ordered_at : formattedDate(new Date()) ) ;
+		orderChanges.planned_delivery_at = $scope.deliveryDate;
 		console.log(orderChanges);
 
 		MainService.select(undefined);
@@ -409,6 +495,18 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 			})		
 
 	}
+
+	// $scope.comNotes = {
+	// 	"width": "400px"
+	// }
+
+	// $scope.comSelect = {
+	// 	"width": "430px"
+	// }
+
+	// $scope.comQuantity = {
+	// 	"width": "50px"
+	// }
 }
 
 module.exports = CardCtrl; 

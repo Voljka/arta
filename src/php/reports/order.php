@@ -4,7 +4,7 @@ header('Content-Type: text/html; charset=utf8');
 require_once ('../libs/phpexcel/Classes/PHPExcel/IOFactory.php');
 require_once ('../libs/PHPMailer/PHPMailerAutoload.php');
 
-function sendReport($subject, $message, $file) {
+function sendReport($subject, $message, $file, $self) {
 
 	$to  = "Admin <voljka13@gmail.com>" ; 
 
@@ -18,8 +18,15 @@ function sendReport($subject, $message, $file) {
 
 	$email->CharSet = "UTF-8";
 
+	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
 	$email->addAddress( 'voljka13@gmail.com' );
+	// $email->addAddress( 'nazarevao1703@gmail.com' );
+
+	if (! $self) {
+		$email->addAddress( 'voljka@inbox.ru' );
+		//$email->addAddress( 'sale@lugashop.net' );
+	}
 
 	$email->addAttachment('/home/idesk/i-desk.xyz/arta-lugansk/php/reports/order.xls');
 	$email->isHTML(true);                                  // Set email format to HTML
@@ -32,7 +39,7 @@ function sendReport($subject, $message, $file) {
 
 function unsafe($str) {
 	$str = str_replace('&#39;', '\'', $str);
-	$str = str_replace('&#34;', '\"', $str);
+	$str = str_replace('&#34;', '"', $str);
 	return $str;
 }
 
@@ -41,6 +48,7 @@ function date_formatted($date) {
 }
 
 $order_id = $_GET['order'];
+$self_mailing = $_GET['mailing'];
 
 $filepath = 'templates/order.xls';
 
@@ -53,7 +61,7 @@ require ('../config/db.config.php');
 
 $table = "positions";
 
-$query = "SELECT $table.commodity, $table.quantity, $table.price, $table.notes position_note, orders.consumer, orders.worker, orders.planned_delivery_at, orders.form, orders.ordered_at, consumers.name consumer_name, consumers.place, consumers.representatives, consumers.notes consumer_note, consumers.is_vip, commodities.name commodity_name, commodities.price1, commodities.price2, commodities.price3, workers.lastname FROM $table ";
+$query = "SELECT $table.commodity, $table.quantity, $table.price, $table.notes position_note, orders.consumer, orders.worker, orders.planned_delivery_at, orders.self_delivery, orders.form, orders.ordered_at, consumers.name consumer_name, consumers.place, consumers.representatives, consumers.notes consumer_note, consumers.is_vip, commodities.name commodity_name, commodities.price1, commodities.price2, commodities.price3, workers.lastname FROM $table ";
 $query .= " LEFT JOIN orders ON $table.order_id = orders.id ";
 $query .= " LEFT JOIN consumers ON orders.consumer = consumers.id ";
 $query .= " LEFT JOIN commodities ON $table.commodity = commodities.id ";
@@ -85,7 +93,7 @@ $ews->setCellValue('C2', $positions[0]['lastname']);
 $ews->setCellValue('C4', unsafe($positions[0]['consumer_name']));
 $ews->setCellValue('C5', unsafe($positions[0]['place']));
 $ews->setCellValue('C6', unsafe($positions[0]['representatives']));
-$ews->setCellValue('C7', unsafe($positions[0]['consumer_note']));
+// $ews->setCellValue('C7', unsafe($positions[0]['consumer_note']));
 
 $ews->setCellValue('C9', date_formatted($positions[0]['planned_delivery_at']));
 $ews->setCellValue('F9', $positions[0]['form']);
@@ -112,19 +120,24 @@ for ($i = 0; $i < count($positions); $i++) {
 
 // Total Rows
 
-$ews->setCellValue('A' . ($i+$table_body_start_line+1), 'TOTAL');
+$ews->setCellValue('A' . ($i+$table_body_start_line+1), 'ИТОГО');
 $ews->setCellValue('E' . ($i+$table_body_start_line+1), $total);
 
 if ($positions[0]['is_vip'] == "1") {
 	$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* VIP. Цена посчитана по колонке \'свыше 50 000 рублей\'');	
 } else {
-	if ($total == $total1) {
-		$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* Цена посчитана по колонке \'свыше 50 000 рублей\'');	
+	if ($positions[0]['self_delivery'] == '1') {
+		$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* САМОВЫВОЗ!!! ');	
+		$ews->setCellValue('B9', 'Дата самовывоза : ');
 	} else {
-		if ($total == $total2) {
-			$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* Цена посчитана по колонке \'свыше 10 000 рублей\'');	
+		if ($total == $total1) {
+			$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* Цена посчитана по колонке \'свыше 50 000 рублей\'');	
 		} else {
-			// $ews->setCellValue('B' . ($i+$table_body_start_line+3), 'Цена посчитана по колонке \'менее 10 000 рублей\'');	
+			if ($total == $total2 && (($total2 == $total3 && $total>9999.99) || $total2 !=$total3)) {
+				$ews->setCellValue('B' . ($i+$table_body_start_line+3), '* Цена посчитана по колонке \'свыше 10 000 рублей\'');	
+			} else {
+				// $ews->setCellValue('B' . ($i+$table_body_start_line+3), 'Цена посчитана по колонке \'менее 10 000 рублей\'');	
+			}
 		}
 	}
 }
@@ -197,11 +210,15 @@ $objWriter->save($orderFileName);
 $objPHPExcel->disconnectWorksheets();
 unset($objWriter, $objPHPExcel);
 
+echo 'mailing = ' . $self_mailing;
 echo 'Finished';
 
 $report_subject = 'Заказ. ' . unsafe($positions[0]['consumer_name']) . '. Доставка: ' . date_formatted($positions[0]['planned_delivery_at']);
 $report_message = 'Добрый день!<br>Заказ<br>Заказчик: ' . unsafe($positions[0]['consumer_name']) . '.<br>Дата поставки: ' . date_formatted($positions[0]['planned_delivery_at']);
 
-sendReport( $report_subject, $report_message, $orderFileName);
+// $report_subject = 'Заказ. ' . html_entity_decode($positions[0]['consumer_name']) . '. Доставка: ' . date_formatted($positions[0]['planned_delivery_at']);
+// $report_message = 'Добрый день!<br>Заказ<br>Заказчик: ' . html_entity_decode($positions[0]['consumer_name']) . '.<br>Дата поставки: ' . date_formatted($positions[0]['planned_delivery_at']);
+
+sendReport( $report_subject, $report_message, $orderFileName, (intval($self_mailing) == 1 ? true : false));
 
 ?>

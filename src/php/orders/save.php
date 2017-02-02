@@ -20,6 +20,7 @@
     $planned_delivery_at = $params['planned_delivery_at'];
     $ordered_at = $params['ordered_at'];
     $order = $params['order'];
+    $self_delivery = $params['self_delivery'];
     $form = $params['form'];
 
 	// file_put_contents('order_save.log', ' Added count '. count($added) . ' Deleted count '. count($deleted) . ' Edited count '. count($edited));
@@ -28,15 +29,15 @@
 
     // Update order info or create new order
     if ($order == "new") {
-		$query = "INSERT INTO orders (consumer, worker, ordered_at, planned_delivery_at, reported_at, form) ";
-		$query .= " VALUES ($consumer, $worker, '$ordered_at', '$planned_delivery_at', NULL, $form); ";
+		$query = "INSERT INTO orders (consumer, worker, ordered_at, planned_delivery_at, reported_at, form, self_delivery) ";
+		$query .= " VALUES ($consumer, $worker, '$ordered_at', '$planned_delivery_at', NULL, $form, $self_delivery); ";
 
 		// echo $query;
 		// file_put_contents('order_save.log', $query);
 		$result = mysql_query($query) or die(mysql_error());
 		$order = mysql_insert_id();
     } else {
-		$query = "UPDATE orders SET consumer=$consumer, worker=$worker, ordered_at='$ordered_at', planned_delivery_at='$planned_delivery_at', reported_at=NULL, form=$form ";
+		$query = "UPDATE orders SET consumer=$consumer, worker=$worker, ordered_at='$ordered_at', planned_delivery_at='$planned_delivery_at', reported_at=NULL, form=$form, self_delivery=$self_delivery ";
 		$query .= " WHERE id=$order; ";
 		// echo $query;
 		// file_put_contents('order_save.log', $query);

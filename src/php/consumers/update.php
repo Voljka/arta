@@ -12,12 +12,14 @@
     $notes = $_POST['notes'];
     $worker = $_POST['worker'];
     $is_vip = $_POST['is_vip'];
-	//$curdate = date("Y-m-d");
+    $tt_type = $_POST['tt_type'];
+    $person = $_POST['person'];
+    $route_order_id = $_POST['route_order_id'];
 
 	/* Таблица MySQL, в которой хранятся данные */
 	$table = "consumers";
 
-	$query = "UPDATE $table SET name='$name', notes='$notes', mail='$mail', place='$place', region=$region, payment_option=$payment_option, worker=$worker, representatives='$representatives', is_vip=$is_vip";
+	$query = "UPDATE $table SET name='$name', notes='$notes', mail='$mail', place='$place', region=$region, payment_option=$payment_option, worker=$worker, representatives='$representatives', person='$person', tt_type=$tt_type, is_vip=$is_vip, route_order_id=$route_order_id ";
 	$query .= " WHERE id=$id ";
 
 	echo $query;

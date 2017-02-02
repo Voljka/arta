@@ -2,8 +2,9 @@
 var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../libs/strings';
 
-function DeliveryCtrl($scope, $state, orderList, OrderService, PositionService){
+function DeliveryCtrl($scope, $state, orderList, OrderService, Flash, PositionService){
 
+	$scope.obj = { selfMailing : false };
 	$scope.onlyTomorrow = true;
 	filterObjects();
 	
@@ -11,6 +12,11 @@ function DeliveryCtrl($scope, $state, orderList, OrderService, PositionService){
 		$scope.onlyTomorrow = ! $scope.onlyTomorrow;
 		filterObjects();
 	};
+
+	orderList.map( function(order) {
+		order.consumer_name = toUnsafeString( order.consumer_name );
+		return order;
+	})
 
 	function formattedDate(dat){
 		var curr_date = dat.getDate();
@@ -23,10 +29,11 @@ function DeliveryCtrl($scope, $state, orderList, OrderService, PositionService){
 	function filterObjects() {
 		
 		var today = new Date();
+		var tomorrow = new Date(today.setDate(today.getDate()+1));
 
 		if ($scope.onlyTomorrow) {
 			$scope.orders = _.filter( orderList, function(o) {
-				return (o.planned_delivery_at.substr(0,10) == formattedDate( today) );
+				return (o.planned_delivery_at.substr(0,10) == formattedDate( tomorrow ) );
 			}) 
 		} else {
 			$scope.orders = orderList;
@@ -39,9 +46,11 @@ function DeliveryCtrl($scope, $state, orderList, OrderService, PositionService){
 	}	
 
 	$scope.sendReport = function() {
-		OrderService.report()
+		OrderService.report(Number($scope.obj.selfMailing))
 			.then( function(respond) {
-
+				console.log(respond);
+		        var message = '<strong>Отчет о планируемых отгрузках успешно отправлен!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
 			})
 	}
 

@@ -73,10 +73,10 @@ function Service($http) {
       });
   }
 
-  function send(id) {
-
+  function send(selfMailing) {
+    console.log('sending self as ' + selfMailing);
     return $http
-      .get(REPORT_API+ '/order.php?order=' + current.id)
+      .get(REPORT_API+ '/order.php?order=' + current.id+'&mailing='+selfMailing)
       .then(function (data) {
         console.log('Order Successfully sent');
         return data.data;
@@ -87,9 +87,9 @@ function Service($http) {
       });
   }
 
-  function report() {
+  function report(selfMailing) {
     return $http
-      .get(REPORT_API+ '/delivery.php')
+      .get(REPORT_API+ '/delivery.php?mailing='+selfMailing)
       .then(function (data) {
         console.log('Report Successfully sent');
         return data.data;
@@ -104,6 +104,19 @@ function Service($http) {
     return $http
       .post(API_SERVER+ '/reported.php', {id: current.id})
       .then(function (data) {
+        console.log('Order ' + current.id + ' deleted from DB');
+        return data.data;
+      })
+      .catch(function () {
+        console.log('Error during deleting order');
+        return undefined;
+      });
+  }
+
+  function remove() {
+    return $http
+      .post(API_SERVER+ '/delete.php', {id: current.id})
+      .then(function (data) {
         console.log(data);
         console.log('Report saved in DB as reported');
         return data.data;
@@ -112,9 +125,7 @@ function Service($http) {
         console.log('Error dutring save order as reported');
         return undefined;
       });
-  }
 
-  function remove(id) {
   }
 
   function getCurrent(){

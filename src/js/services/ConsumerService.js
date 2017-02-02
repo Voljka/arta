@@ -46,6 +46,17 @@ function ConsumerService($http) {
       });
   }
 
+  function saveOrder(data) {
+    return $http
+      .post(API_SERVER + '/save_order.php', data)
+      .then(function (data) {
+        return data.data;
+      })
+      .catch(function () {
+        return undefined;
+      });
+  }
+
   function remove(id) {
   }
 
@@ -64,6 +75,7 @@ function ConsumerService($http) {
     add        : add,
     update     : update,
     delete     : remove,    
+    saveOrder  : saveOrder,
   };
 }
 

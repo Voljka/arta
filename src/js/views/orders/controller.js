@@ -3,14 +3,16 @@ var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../libs/strings';
 
 
-function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
+function OrderCtrl($scope, $state, consumerList, orderList, Flash, OrderService){
 
+	$scope.obj = { selfMailing: false };
 	$scope.notReportedOnly = false;
 	$scope.textFilter = "";
 
 	$scope.currentOrder = OrderService.current();
 	
 	$scope.consumers = consumerList;
+	
 	$scope.orders = orderList;
 
 	filterObjects($scope.orders); 
@@ -49,25 +51,32 @@ function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
 	}
 
 	$scope.sendReport = function() {
-		OrderService.send()
+		console.log($scope.selfMailing);
+		OrderService.send(Number($scope.obj.selfMailing))
 			.then( function(respond) {
+				console.log(respond);
+
+		        var message = '<strong>Заказ успешно отправлен!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
 				// save Order as Reported
-				return OrderService.reported();
-			})
-			.then( function(reportedDate) {
-				$scope.orders.map( function(order) {
-					if ($scope.currentOrder.id == order.id) {
-						order.reported_at = reportedDate;
-						order.selected = false;
-					}
+				if (! $scope.selfMailing) {
+					return OrderService.reported()
+						.then( function(reportedDate) {
+							$scope.orders.map( function(order) {
+								if ($scope.currentOrder.id == order.id) {
+									order.reported_at = reportedDate;
+									order.selected = false;
+								}
 
-					return order;
-				})
+								return order;
+							})
 
-				$scope.currentOrder = undefined;
+							$scope.currentOrder = undefined;
 
-				OrderService.select(undefined);
-				filterObjects();
+							OrderService.select(undefined);
+							filterObjects();
+						})
+				}
 			})
 	}
 
@@ -85,7 +94,13 @@ function OrderCtrl($scope, $state, consumerList, orderList, OrderService){
 	}
 
 	$scope.delete = function() {
-		OrderService.delete();
+		OrderService.delete()
+			.then(function(respond){
+				console.log(respond);
+		        var message = '<strong>Заказ успешно удален!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+
+			})
 	}
 
 	function filterObjects() {
