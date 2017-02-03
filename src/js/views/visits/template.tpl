@@ -2,8 +2,8 @@
 	<div class="col-md-8">
 		<button class="btn btn-info" ng-click="add()">Добавить отчет</button>
 		<button class="btn btn-info" ng-if="currentReport" ng-click="edit()">Изменить отчет</button>
-		<button class="btn btn-info" ng-if="currentReport" ng-click="delete()">Удалить отчет</button>
 		<button class="btn btn-info" ng-click="showNotReported()">{{ notReportedOnly ? "Показать все" : "Показать неотравленные"}}</button>
+		<button class="btn btn-danger" ng-if="currentReport" ng-click="delete()">Удалить отчет</button>
 	</div>
 	<div class="col-md-4">
 		<button class="btn btn-info" ng-click="sendReport()">Отправить отчет</button>	<span>Только себе <input type="checkbox" ng-model="selfMailing"> </span>

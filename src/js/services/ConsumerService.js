@@ -1,6 +1,7 @@
 'use strict';
 
 var API_SERVER = 'php/consumers';
+var REPORT_API = 'php/reports';
 
 var current;
 
@@ -68,6 +69,30 @@ function ConsumerService($http) {
     current = selectedObject;
   }
 
+  function sendPrice(id){
+    var data = {};
+    if (id) {
+      data.id = id;
+      return $http
+        .post(REPORT_API + '/price_mailing.php', data)
+        .then(function (data) {
+          return data.data;
+        })
+        .catch(function () {
+          return undefined;
+        });
+    } else {
+      return $http
+        .post(REPORT_API + '/price_mailing.php', data)
+        .then(function (data) {
+          return data.data;
+        })
+        .catch(function () {
+          return undefined;
+        });
+    }
+  }
+
   return {
     all     : getAll,
     current : getCurrent,
@@ -76,6 +101,8 @@ function ConsumerService($http) {
     update     : update,
     delete     : remove,    
     saveOrder  : saveOrder,
+    sendPrice  : sendPrice,
+
   };
 }
 

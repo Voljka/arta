@@ -34,14 +34,15 @@ function sendPriceMessage($contact) {
 	return $email->Send();
 }
 
-$consumer = $_GET['id'];
+$params = json_decode(file_get_contents('php://input'),true);
+$consumer = $params['id'];
 
 require ('../config/db.config.php');
 
 $query = "SELECT mail FROM consumers ";
 
 if ($consumer) {
-	$query .= " id=$consumer ";	
+	$query .= " WHERE id=$consumer ";	
 }
 
 $result = mysql_query($query) or die(mysql_error());
@@ -53,8 +54,8 @@ while ($row = mysql_fetch_assoc($result))
 	
 	foreach ($email_array as $email) {
 		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		    // echo "E-mail ($email) указан верно.\n";
-		    // sendPriceMessage($email);
+		    echo "E-mail : ($email).\n";
+		    sendPriceMessage($email);
 		} else {
 		    // echo "E-mail ($email) указан неверно.\n";
 		}
@@ -62,7 +63,8 @@ while ($row = mysql_fetch_assoc($result))
 
 }
 
-echo sendPriceMessage('voljka13@gmail.com');
+// echo 'Consumer id # ' . $params['id'];
+// echo sendPriceMessage('voljka13@gmail.com');
 
 echo 'Finished';
 ?>

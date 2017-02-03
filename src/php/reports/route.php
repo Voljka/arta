@@ -23,7 +23,7 @@ function sendReport($subject, $message, $file, $self) {
 	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
 	$email->addAddress( 'voljka13@gmail.com' );
-	// $email->addAddress( 'nazarevao1703@gmail.com' );
+	$email->addAddress( 'nazarevao1703@gmail.com' );
 
 	if (! $self) {
 		$email->addAddress( 'voljka@inbox.ru' );

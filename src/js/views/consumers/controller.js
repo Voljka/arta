@@ -2,7 +2,7 @@
 var _ = require('lodash');
 import { toSafeString, toUnsafeString } from '../../libs/strings';
 
-function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, ConsumerService) {
+function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Flash, ConsumerService) {
 
 	$scope.currentConsumer = ConsumerService.current();
 
@@ -66,6 +66,24 @@ function ConsumerCtrl($scope, $state, consumerList, regionList, workerList, Cons
 
 	$scope.delete = function() {
 		ConsumerService.delete();
+	}
+
+	$scope.sendPrice = function(){
+		ConsumerService.sendPrice($scope.currentConsumer.id)
+			.then( function(respond) {
+				console.log(respond);
+		        var message = '<strong>Прайс был успешно отправлен, если E-mail клиента указан верно!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+			}) 
+	}
+
+	$scope.sendPriceAll = function(){
+		ConsumerService.sendPrice()
+			.then( function(respond) {
+				console.log(respond);
+		        var message = '<strong>Рассылка прайса завершена!</strong>';
+		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+			}) 
 	}
 
 	function filterObjects() {

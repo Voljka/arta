@@ -1,16 +1,18 @@
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-12">
 		<input ng-model="textFilter" type="text" ng-change="useFilter()" placeholder="Фильтр">
-		<br>
-		<br>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-7">
 		<button class="btn btn-info" ng-click="add()">Добавить заказ</button>
-		<button class="btn btn-info" ng-if="currentOrder" ng-click="edit()">Изменить заказ</button>
-		<button class="btn btn-info" ng-if="currentOrder" ng-click="delete()">Удалить заказ</button>
+		<button class="btn btn-info" ng-if="currentOrder && filteredObjects.length > 0" ng-click="edit()">Изменить заказ</button>
 		<button class="btn btn-info" ng-click="showNotReported()">{{ notReportedOnly ? "Показать все заказы" : "Показать только неотправленные"}}</button>
 	</div>
-	<div class="col-md-4" ng-if="currentOrder">
+	<div class="col-md-5" ng-if="currentOrder && filteredObjects.length > 0">
 		<button class="btn btn-info" ng-click="sendReport()">Отправить заказ</button>
 		<span>Только себе <input type="checkbox" ng-model="obj.selfMailing"> </span>
+		<button class="btn btn-danger" ng-click="delete()">Удалить заказ</button>
 	</div>
 
 </div>

@@ -99,7 +99,17 @@ function OrderCtrl($scope, $state, consumerList, orderList, Flash, OrderService)
 				console.log(respond);
 		        var message = '<strong>Заказ успешно удален!</strong>';
 		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+		        OrderService.allDetailed()
+		        	.then( function(data) {
+						$scope.orders = data;
 
+						$scope.orders.map( function(order) {
+							order.consumer_name = toUnsafeString( order.consumer_name );
+							return order;
+						})		        
+						filterObjects($scope.orders); 
+
+		        	})
 			})
 	}
 
