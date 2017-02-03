@@ -24,8 +24,8 @@ function sendReport($subject, $message, $file, $self) {
 	$email->addAddress( 'nazarevao1703@gmail.com' );
 
 	if (! $self) {
-		$email->addAddress( 'voljka@inbox.ru' );
-		//$email->addAddress( 'sale@lugashop.net' );
+		// $email->addAddress( 'voljka@inbox.ru' );
+		// $email->addAddress( 'sale@lugashop.net' );
 	}
 
 	$email->addAttachment('/home/idesk/i-desk.xyz/arta-lugansk/php/reports/order.xls');
@@ -40,6 +40,7 @@ function sendReport($subject, $message, $file, $self) {
 function unsafe($str) {
 	$str = str_replace('&#39;', '\'', $str);
 	$str = str_replace('&#34;', '"', $str);
+	$str = str_replace('&amp;', '&', $str);
 	return $str;
 }
 
@@ -106,7 +107,7 @@ $total3 = 0;
 
 for ($i = 0; $i < count($positions); $i++) {
 	$ews->setCellValue('A' . ($i+$table_body_start_line), $i+1);
-	$ews->setCellValue('B' . ($i+$table_body_start_line), $positions[$i]['commodity_name']);
+	$ews->setCellValue('B' . ($i+$table_body_start_line), unsafe($positions[$i]['commodity_name']));
 	$ews->setCellValue('C' . ($i+$table_body_start_line), $positions[$i]['quantity']);
 	$ews->setCellValue('D' . ($i+$table_body_start_line), $positions[$i]['price']);
 	$ews->setCellValue('E' . ($i+$table_body_start_line), $positions[$i]['price'] * $positions[$i]['quantity']);

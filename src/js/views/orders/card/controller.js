@@ -11,6 +11,13 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 		return consumer;
 	})
 
+	positionList.map( function(position) {
+		var name = toUnsafeString( position.commodity_name );
+
+		Object.assign(position, { commodity_name: name });
+		return position;
+	})
+
 	commodityList.map( function(obj) {
 		var name = toUnsafeString( obj.name );
 		if (obj.is_old == 1) {
@@ -88,15 +95,29 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 			if ($scope.commodities.length > 0) {
 				$scope.comSelect = $scope.commodities[0].id;
 				
-				
 				$scope.positions.map( function(o) {
 					if (o.id == position.id) {
 						o.commodity = $scope.commodities[0].id;
-						$scope.changeCommodity(o);
+						o.commodity_name = $scope.commodities[0].name;
+						o.price1 = $scope.commodities[0].price1;
+						o.price2 = $scope.commodities[0].price2;
+						o.price3 = $scope.commodities[0].price3;
+
+						if ($scope.priceType==1) {
+							o.price = $scope.commodities[0].price1;							
+						} else {
+							if ($scope.priceType==2) {
+								o.price = $scope.commodities[0].price2;							
+							} else {
+								o.price = $scope.commodities[0].price3;							
+							}
+						}
+						// $scope.changeCommodity(o);
 					}
 
 					return o;
 				})
+
 			}
 		}		
 	}
@@ -113,7 +134,7 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	$scope.fullConsumer = _.find(consumerList, {id: $scope.currentConsumer});
 	var currentIsVip = $scope.fullConsumer.is_vip;
 
-	$scope.currentForm = ($state.current.name == 'order_modify') ? current.form : "1";
+	$scope.currentForm = ($state.current.name == 'order_modify') ? current.form : "2";
 	$scope.deliveryDate = ($state.current.name == 'order_modify') ? (new Date(current.planned_delivery_at.substr(0,10))) : (new Date( plannedDelivery() ));
 
 	orderChanges.planned_delivery_at = formattedDate( $scope.deliveryDate );
@@ -256,15 +277,21 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.changeCommodity = function(position) {
+		console.log('position')
+		console.log(position);
+		$scope.filters.commodity = "";
+
 		if (position.commodity) {
 			var selectedCommodity = _.find(commodityList, {id: position.commodity});
+			console.log('selectedCommodity');
+			console.log(selectedCommodity);
 
 			position.commodity_name = selectedCommodity.name;
 
 			if (($scope.fullConsumer.is_vip == 1)) {
-				position.price = Number((selectedCommodity).price1);
+				position.price = Number(selectedCommodity.price1);
 			} else {
-				position.price = Number((selectedCommodity).price3);
+				position.price = Number(selectedCommodity.price3);
 			}
 		}
 	}
@@ -390,7 +417,8 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 			if (position.new && $scope.commodities.length == 0) {
 			} else {
 				result += position.quantity * position.price;
-				resultByPrice3 += position.quantity * Number((_.find( $scope.commodities, {id: position.commodity} )).price3);
+				resultByPrice3 += position.quantity * Number((_.find( commodityList, {id: position.commodity} )).price3);
+				// resultByPrice3 += position.quantity * Number((_.find( $scope.commodities, {id: position.commodity} )).price3);
 			}
 		})
 
@@ -496,17 +524,6 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 
 	}
 
-	// $scope.comNotes = {
-	// 	"width": "400px"
-	// }
-
-	// $scope.comSelect = {
-	// 	"width": "430px"
-	// }
-
-	// $scope.comQuantity = {
-	// 	"width": "50px"
-	// }
 }
 
 module.exports = CardCtrl; 

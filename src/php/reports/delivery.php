@@ -20,12 +20,11 @@ function sendReport($subject, $message, $file, $self) {
 
 	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
-	$email->addAddress( 'voljka13@gmail.com' );
+	// $email->addAddress( 'voljka13@gmail.com' );
 	$email->addAddress( 'nazarevao1703@gmail.com' );
 
 	if (! $self) {
-		$email->addAddress( 'voljka@inbox.ru' );
-		// $email->addAddress( 'deroored80@mail.ru' );
+		$email->addAddress( 'deroored80@mail.ru' );
 	}
 
 	$email->addAttachment('/home/idesk/i-desk.xyz/arta-lugansk/php/reports/delivery_report.xls');
@@ -40,8 +39,10 @@ function sendReport($subject, $message, $file, $self) {
 function unsafe($str) {
 	$str = str_replace('&#39;', '\'', $str);
 	$str = str_replace('&#34;', '"', $str);
+	$str = str_replace('&amp;', '&', $str);
 	return $str;
 }
+
 
 function date_formatted($date) {
 	return substr($date, 8, 2). '-'. substr($date, 5,2) . '-' . substr($date, 0, 4);
@@ -78,6 +79,8 @@ $query .=       ") AS details ON details.order_id = $table.id ";
 $query .=       "WHERE details.order_sum > 0 AND SUBSTRING($table.planned_delivery_at,1,10) = '$delivery_date' AND $table.self_delivery = 0 AND $table.reported_at IS NOT NULL ";	
 // $query .=       "WHERE details.order_sum > 0 AND $table.planned_delivery_at = '$delivery_date' AND $table.self_delivery = 0 AND $table.reported_at IS NOT NULL ";	
 $query .=       "ORDER BY orders.planned_delivery_at";
+
+echo $query;
 
 $result = mysql_query($query) or die(mysql_error());
 
@@ -179,8 +182,8 @@ unset($objWriter, $objPHPExcel);
 echo 'mailing = ' . $self_mailing;
 echo 'Finished';
 
-$report_subject = 'Отчет об отгрузках. ' . unsafe($orders[0]['manager_name']) . '. Доставка: ' . date_formatted( date("Y-m-d"));
-$report_message = 'Добрый день!<br>Отчет об огрузке<br>Торговый представитель: ' . unsafe($orders[0]['manager_name']) . '.<br>Дата поставки: ' . date_formatted( date("Y-m-d"));
+$report_subject = 'Отчет об отгрузках. ' . unsafe($orders[0]['manager_name']) . '. Доставка: ' . date_formatted( substr($delivery_date, 0, 10) );
+$report_message = 'Добрый день!<br>Отчет об огрузке<br>Торговый представитель: ' . unsafe($orders[0]['manager_name']) . '.<br>Дата поставки: ' . date_formatted( substr($delivery_date, 0, 10) );
 
 sendReport( $report_subject, $report_message, $orderFileName, (intval($self_mailing) == 1 ? true : false));
 

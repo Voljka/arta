@@ -9,7 +9,7 @@
 	$query .= 	" LEFT JOIN consumers ON consumers.id = $table.consumer ";
 	$query .= 	" LEFT JOIN regions ON regions.id = consumers.region ";
 	$query .= " WHERE $table.report=$report_id ";
-	$query .= " ORDER BY consumers.name";
+	$query .= " ORDER BY consumers.route_order_id";
 	
 	$result = mysql_query($query) or die(mysql_error());
 

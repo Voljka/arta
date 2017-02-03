@@ -22,13 +22,13 @@ function sendReport($subject, $message, $file, $self) {
 
 	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
-	$email->addAddress( 'voljka13@gmail.com' );
+	// $email->addAddress( 'voljka13@gmail.com' );
 	$email->addAddress( 'nazarevao1703@gmail.com' );
 
 	if (! $self) {
-		$email->addAddress( 'voljka@inbox.ru' );
+		// $email->addAddress( 'voljka@inbox.ru' );
 
-		// $email->addAddress( 'deroored80@mail.ru' );
+		$email->addAddress( 'deroored80@mail.ru' );
 
 	}
 
@@ -44,8 +44,10 @@ function sendReport($subject, $message, $file, $self) {
 function unsafe($str) {
 	$str = str_replace('&#39;', '\'', $str);
 	$str = str_replace('&#34;', '"', $str);
+	$str = str_replace('&amp;', '&', $str);
 	return $str;
 }
+
 
 function date_formatted($date) {
 	return substr($date, 8, 2). '-'. substr($date, 5,2) . '-' . substr($date, 0, 4);
