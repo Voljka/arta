@@ -103,20 +103,17 @@
 								<div class="input-group commodity-select">
 									<span class="input-group-addon">Товар: </span>
 									<select class="form-control" ng-change="changeCommodity(position)"  ng-model="position.commodity"> 
-<!-- 									<select class="form-control" ng-change="changeCommodity(position)" ng-style="comSelect" ng-model="position.commodity">    -->
 										<option ng-repeat="commodity in commodities" ng-value="commodity.id">{{ commodity.name }}</option>	
 									</select>
 								</div>	
 								<div class="input-group">
 									<span class="input-group-addon">Заметка: </span>
 									<input class="form-control commodity-note" type="text" ng-model="position.notes">			
-<!-- 									<input class="form-control" ng-style="comNotes" type="text" ng-model="position.notes">			 -->
 								</div>	
 							</td>
 							<!-- Quantity -->
 							<td ng-if="! position.editing"> {{ position.quantity }}</td>
 							<td ng-if="position.editing"> <input class="commodity-quantity-input" type="number" min="1" ng-model="position.quantity"> </td>
-<!-- 							<td ng-if="position.editing"> <input ng-style="comQuantity" type="number" min="1" ng-model="position.quantity"> </td> -->
 							
 							<!-- Price-->
 							<td class="price"> {{ position.commodity ? numberSplitted(position.price) : "0" }}</td>

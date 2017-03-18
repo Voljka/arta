@@ -51,6 +51,12 @@ function DeliveryCtrl($scope, $state, orderList, OrderService, Flash, PositionSe
 				console.log(respond);
 		        var message = '<strong>Отчет о планируемых отгрузках успешно отправлен!</strong>';
 		        var id = Flash.create('success', message, 3000, {class: 'custom-class', id: 'custom-id'}, true);
+
+			    OrderService.allNotDeliveredYet()
+			      .then(function(data) {
+			        orderList = data;
+			        filterObjects();
+			      })		        
 			})
 	}
 

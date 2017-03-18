@@ -34,13 +34,22 @@ function compare( oldDB, newDB ) {
 		var elem = _.find( oldDB, {name: newCom.name} );
 		if (! elem) {
 			newCommodities.push(newCom);
-			sqlAdd += '("'+ newCom.name +'", "", '+ newCom.price1 + ', '+ newCom.price2 + ', '+ newCom.price3 + ', 0),';
+			//// If columns with prices organized as "> 10", ">50", "<10"
+			sqlAdd += '("'+ newCom.name +'", "", '+ newCom.price2 + ', '+ newCom.price1 + ', '+ newCom.price3 + ', 0),\n';
+			//// If columns with prices organized as "> 50", ">10", "<10"
+			// sqlAdd += '("'+ newCom.name +'", "", '+ newCom.price1 + ', '+ newCom.price2 + ', '+ newCom.price3 + ', 0),\n';
 			// console.log('new!');
 		} else {
-			if ( Number(elem.price1) == Number(newCom.price1) && Number(elem.price2) == Number(newCom.price2) && Number(elem.price3) == Number(newCom.price3)) {
+			//// If columns with prices organized as "> 10", ">50", "<10"
+			if ( Number(elem.price1) == Number(newCom.price2) && Number(elem.price2) == Number(newCom.price1) && Number(elem.price3) == Number(newCom.price3)) {
+			//// If columns with prices organized as "> 50", ">10", "<10"
+			// if ( Number(elem.price1) == Number(newCom.price1) && Number(elem.price2) == Number(newCom.price2) && Number(elem.price3) == Number(newCom.price3)) {
 				sameCommodities.push(newCom);
 			} else {
-				sqlUpdate += 'UPDATE commodities SET price1='+ newCom.price1 +', price2='+ newCom.price2 + ', price3='+ newCom.price3 +' WHERE id='+elem.id+';';
+				//// If columns with prices organized as "> 10", ">50", "<10"
+				sqlUpdate += 'UPDATE commodities SET price1='+ newCom.price2 +', price2='+ newCom.price1 + ', price3='+ newCom.price3 +' WHERE id='+elem.id+';\n';
+				//// If columns with prices organized as "> 50", ">10", "<10"
+				// sqlUpdate += 'UPDATE commodities SET price1='+ newCom.price1 +', price2='+ newCom.price2 + ', price3='+ newCom.price3 +' WHERE id='+elem.id+';\n';
 				changedCommodities.push(newCom);
 			}
 
@@ -62,7 +71,8 @@ function compare( oldDB, newDB ) {
 	oldDB.forEach( function(o) {
 		if (! o.found) {
 			removed++;
-			sqlMarkAsOld += o.id + ',';
+			sqlMarkAsOld += o.id +  ',\n';
+			// sqlMarkAsOld += o.id + ' ' + o.name +  ',\n';
 			//console.log(o)
 		}
 	})

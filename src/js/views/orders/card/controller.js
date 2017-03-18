@@ -43,6 +43,7 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	var idCounter = 1000000000000;
 
 	var temporalPosition;
+	var isEditMode = false;
 
 	var orderChanges = {
 		edited: [],
@@ -231,6 +232,7 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.add = function() {
+		isEditMode = false;
 		$scope.filters.commodity = "";
 		$scope.commodities = commodityList;
 		$scope.comSelect = commodityList[0].id;
@@ -260,6 +262,7 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.modifyPosition = function(id) {
+		isEditMode = true;
 		$scope.filters.commodity = "";
 		$scope.commodities = commodityList;
 
@@ -277,14 +280,14 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.changeCommodity = function(position) {
-		console.log('position')
-		console.log(position);
+		// console.log('position')
+		// console.log(position);
 		$scope.filters.commodity = "";
 
 		if (position.commodity) {
 			var selectedCommodity = _.find(commodityList, {id: position.commodity});
-			console.log('selectedCommodity');
-			console.log(selectedCommodity);
+			// console.log('selectedCommodity');
+			// console.log(selectedCommodity);
 
 			position.commodity_name = selectedCommodity.name;
 
@@ -347,15 +350,18 @@ function CardCtrl($scope, $state, current, consumerList, commodityList, position
 	}
 
 	$scope.restorePosition = function(position) {
-		if (position.new) {
+		console.log(position);
+		console.log($scope.positions);
+
+		if (! isEditMode) {
 			$scope.positions = _.filter($scope.positions, function(o){
-				return ! o.new;
+				return (o.id != position.id);
 			});
-			$scope.editingMode = false;
 		} else {
 			Object.assign(position,  { editing: false },temporalPosition);
-			$scope.editingMode = false;
-		}
+	 	}
+
+		$scope.editingMode = false;
 	}
 
 	$scope.savePosition = function(position) {

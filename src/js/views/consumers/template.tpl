@@ -8,9 +8,10 @@
 	</div>
 	<div class="col-md-6">
 		<button class="btn btn-info" ng-if="currentConsumer" ng-click="sendPrice()">Отправить прайс</button>
-		<button class="btn btn-info" ng-disabled="true" ng-click="sendPriceAll()">Разослать прайс всем</button>
+		<button class="btn btn-info" ng-disabled="false" ng-click="sendPriceAll()">Разослать прайс всем</button>
 	</div>
 </div>
+
 <div class="row">
 	<flash-message>
 		<div class="flash-div">{{ flash.text}}</div>

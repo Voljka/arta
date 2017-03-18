@@ -80,7 +80,7 @@ $query .=       "WHERE details.order_sum > 0 AND SUBSTRING($table.planned_delive
 // $query .=       "WHERE details.order_sum > 0 AND $table.planned_delivery_at = '$delivery_date' AND $table.self_delivery = 0 AND $table.reported_at IS NOT NULL ";	
 $query .=       "ORDER BY orders.planned_delivery_at";
 
-echo $query;
+// echo $query;
 
 $result = mysql_query($query) or die(mysql_error());
 
@@ -102,6 +102,10 @@ $ews->setCellValue('C2', date_formatted( substr($delivery_date, 0, 10) ));
 
 // Order Body
 
+$update_delivery_report_query = "INSERT INTO deliveries (position, delivered_at, notes, reported_at) VALUES ";
+$Curdatetime = date("Y-m-d H:i:s");
+$deliveries_to_add = 0;
+
 for ($i = 0; $i < count($orders); $i++) {
 	$ews->setCellValue('A' . ($i+$table_body_start_line), $i+1);
 	$ews->setCellValue('B' . ($i+$table_body_start_line), unsafe($orders[$i]['consumer_name']));
@@ -111,6 +115,25 @@ for ($i = 0; $i < count($orders); $i++) {
 	$ews->setCellValue('F' . ($i+$table_body_start_line), date_formatted( $orders[$i]['planned_delivery_at']) );
 
 	$total += $orders[$i]['order_sum'];
+	$cur_order = $orders[$i]['id'];
+	$query = "SELECT * FROM positions WHERE order_id=$cur_order";
+	// echo $query;
+
+	$result = mysql_query($query) or die(mysql_error());
+
+	while ($row = mysql_fetch_assoc($result)) 
+	{
+		$cur_position = $row['id'];	
+		$update_delivery_report_query .= "($cur_position, NULL, '', '$Curdatetime'),";
+		$deliveries_to_add++;
+	};
+
+}
+
+if ($deliveries_to_add > 0) {
+	$update_delivery_report_query = substr($update_delivery_report_query, 0, mb_strlen($update_delivery_report_query)-1);
+	// echo $update_delivery_report_query;
+	$result = mysql_query($update_delivery_report_query) or die(mysql_error());
 }
 
 // Total Rows

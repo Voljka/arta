@@ -25,7 +25,7 @@ function sendReport($subject, $message, $file, $self) {
 
 	if (! $self) {
 		// $email->addAddress( 'voljka@inbox.ru' );
-		// $email->addAddress( 'sale@lugashop.net' );
+		$email->addAddress( 'sale@lugashop.net' );
 	}
 
 	$email->addAttachment('/home/idesk/i-desk.xyz/arta-lugansk/php/reports/order.xls');

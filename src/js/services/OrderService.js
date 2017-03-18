@@ -104,11 +104,11 @@ function Service($http) {
     return $http
       .post(API_SERVER+ '/reported.php', {id: current.id})
       .then(function (data) {
-        console.log('Order ' + current.id + ' deleted from DB');
+        console.log('Order ' + current.id + ' reported to Account Office');
         return data.data;
       })
       .catch(function () {
-        console.log('Error during deleting order');
+        console.log('Error during reporting order to Account Office');
         return undefined;
       });
   }

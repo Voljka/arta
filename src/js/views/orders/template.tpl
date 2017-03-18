@@ -38,7 +38,7 @@
 		<tbody>
 			<tr ng-class="order.selected ? 'item-selected' : ''" ng-repeat="order in filteredObjects" ng-click="select(order)">
 				<td> {{ order.consumer_name }}</td>
-				<td> {{ order.ordered_at }}</td>
+				<td> {{ order.ordered_at.substr(0, 10) }}</td>
 				<td class="price"> {{ numberSplitted( order.order_sum ) }}</td>
 				<td> {{ order.manager_name }}</td>
 				<td> {{ order.reported_at }}</td>

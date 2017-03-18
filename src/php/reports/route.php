@@ -22,7 +22,7 @@ function sendReport($subject, $message, $file, $self) {
 
 	$email->AddReplyTo('nazarevao1703@gmail.com', 'Nazarieva Olga');
 	$email->setFrom('nazareva.olga.arta@i-desk.xyz', 'Nazarieva Olga');
-	// $email->addAddress( 'voljka13@gmail.com' );
+	$email->addAddress( 'voljka13@gmail.com' );
 	$email->addAddress( 'nazarevao1703@gmail.com' );
 
 	if (! $self) {
@@ -61,10 +61,10 @@ $cur_day_of_the_week = date("w");
 $curdate = date("Y-m-d");
 
 $start_date = date("Y-m-d", strtotime($curdate) - ($cur_day_of_the_week - 1)*24*60*60);
-
 $manager_id = 1;
 
 $filepath = 'templates/route.xlsx';
+// $filepath = 'templates/route.xls';
 
 $objReader = PHPExcel_IOFactory::createReaderForFile($filepath);
 $objPHPExcel = $objReader->load($filepath);

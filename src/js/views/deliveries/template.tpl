@@ -33,7 +33,7 @@
 				<td class="price"> {{ numberSplitted( order.order_sum ) }}</td>
 				<td> {{ order.manager_name }}</td>
 				<td> {{ order.planned_delivery_at }}</td>
-				<td> {{ order.position_reported_at ? 'Yes' : '' }}</td>
+				<td> {{ order.position_reported_at ? 'Да' : '' }}</td>
 			</tr>
 			
 		</tbody>
